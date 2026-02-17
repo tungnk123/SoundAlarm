@@ -13,3 +13,20 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+
+# AI Assistant Skills (mobile-best-practices)
+.claude/
+.cursor/
+.windsurf/
+.opencode/
+OPENCODE.md
+.github/copilot/
+.roo/
+.continue/
+.kiro/
+.qoder/
+.codebuddy/
+.trae/
+.antigravity/
+.mobile-best-practices/
