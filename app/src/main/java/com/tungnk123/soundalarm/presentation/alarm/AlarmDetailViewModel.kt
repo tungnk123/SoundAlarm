@@ -4,8 +4,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tungnk123.soundalarm.domain.model.Alarm
+import com.tungnk123.soundalarm.domain.model.AlarmDayTrack
 import com.tungnk123.soundalarm.domain.model.DayOfWeek
+import com.tungnk123.soundalarm.domain.model.MusicTrack
+import com.tungnk123.soundalarm.domain.repository.AlarmDayTrackRepository
 import com.tungnk123.soundalarm.domain.repository.AlarmRepository
+import com.tungnk123.soundalarm.domain.repository.PlaylistRepository
 import com.tungnk123.soundalarm.domain.usecase.SaveAlarmUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +18,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+data class TrackSelection(
+    val trackUri: String,
+    val trackTitle: String,
+    val trackArtist: String,
+)
 
 data class AlarmDetailUiState(
     val hour: Int = 8,
@@ -24,6 +34,11 @@ data class AlarmDetailUiState(
     val soundUri: String? = null,
     val isEditing: Boolean = false,
     val isSaved: Boolean = false,
+    // Key = DayOfWeek.name or AlarmDayTrack.DEFAULT_DAY
+    val dayTracks: Map<String, TrackSelection> = emptyMap(),
+    val playlist: List<MusicTrack> = emptyList(),
+    // Which day slot is currently showing the track picker
+    val showTrackPickerForDay: String? = null,
 )
 
 @HiltViewModel
@@ -31,6 +46,8 @@ class AlarmDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val alarmRepository: AlarmRepository,
     private val saveAlarmUseCase: SaveAlarmUseCase,
+    private val playlistRepository: PlaylistRepository,
+    private val alarmDayTrackRepository: AlarmDayTrackRepository,
 ) : ViewModel() {
 
     private val alarmId: Long = savedStateHandle["alarmId"] ?: 0L
@@ -39,8 +56,18 @@ class AlarmDetailViewModel @Inject constructor(
     val uiState: StateFlow<AlarmDetailUiState> = _uiState.asStateFlow()
 
     init {
+        loadPlaylist()
         if (alarmId != 0L) {
             loadAlarm()
+            loadDayTracks()
+        }
+    }
+
+    private fun loadPlaylist() {
+        viewModelScope.launch {
+            playlistRepository.getPlaylist().collect { tracks ->
+                _uiState.update { it.copy(playlist = tracks) }
+            }
         }
     }
 
@@ -58,6 +85,21 @@ class AlarmDetailViewModel @Inject constructor(
                         isEditing = true,
                     )
                 }
+            }
+        }
+    }
+
+    private fun loadDayTracks() {
+        viewModelScope.launch {
+            alarmDayTrackRepository.getTracksForAlarm(alarmId).collect { tracks ->
+                val map = tracks.associate { track ->
+                    track.dayOfWeek to TrackSelection(
+                        trackUri = track.trackUri,
+                        trackTitle = track.trackTitle,
+                        trackArtist = track.trackArtist,
+                    )
+                }
+                _uiState.update { it.copy(dayTracks = map) }
             }
         }
     }
@@ -82,6 +124,34 @@ class AlarmDetailViewModel @Inject constructor(
         _uiState.update { it.copy(isVibrate = !it.isVibrate) }
     }
 
+    fun showTrackPickerForDay(dayKey: String) {
+        _uiState.update { it.copy(showTrackPickerForDay = dayKey) }
+    }
+
+    fun dismissTrackPicker() {
+        _uiState.update { it.copy(showTrackPickerForDay = null) }
+    }
+
+    fun selectTrackForDay(dayKey: String, track: MusicTrack) {
+        _uiState.update { state ->
+            val newDayTracks = state.dayTracks.toMutableMap()
+            newDayTracks[dayKey] = TrackSelection(
+                trackUri = track.contentUri.toString(),
+                trackTitle = track.title,
+                trackArtist = track.artist,
+            )
+            state.copy(dayTracks = newDayTracks, showTrackPickerForDay = null)
+        }
+    }
+
+    fun removeTrackForDay(dayKey: String) {
+        _uiState.update { state ->
+            val newDayTracks = state.dayTracks.toMutableMap()
+            newDayTracks.remove(dayKey)
+            state.copy(dayTracks = newDayTracks)
+        }
+    }
+
     fun saveAlarm() {
         viewModelScope.launch {
             val state = _uiState.value
@@ -94,7 +164,20 @@ class AlarmDetailViewModel @Inject constructor(
                 isVibrate = state.isVibrate,
                 soundUri = state.soundUri,
             )
-            saveAlarmUseCase(alarm)
+            val savedId = saveAlarmUseCase(alarm)
+
+            // Persist day-track selections
+            alarmDayTrackRepository.deleteAllTracksForAlarm(savedId)
+            state.dayTracks.forEach { (dayKey, selection) ->
+                alarmDayTrackRepository.setTrackForDay(
+                    alarmId = savedId,
+                    dayOfWeek = dayKey,
+                    trackUri = selection.trackUri,
+                    trackTitle = selection.trackTitle,
+                    trackArtist = selection.trackArtist,
+                )
+            }
+
             _uiState.update { it.copy(isSaved = true) }
         }
     }

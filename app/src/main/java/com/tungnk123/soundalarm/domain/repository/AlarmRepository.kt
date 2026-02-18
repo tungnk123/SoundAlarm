@@ -10,4 +10,5 @@ interface AlarmRepository {
     suspend fun updateAlarm(alarm: Alarm)
     suspend fun deleteAlarm(alarm: Alarm)
     suspend fun toggleAlarm(id: Long, isEnabled: Boolean)
+    suspend fun getEnabledAlarms(): List<Alarm>
 }

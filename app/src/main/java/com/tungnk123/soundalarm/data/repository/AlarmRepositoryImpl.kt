@@ -37,4 +37,8 @@ class AlarmRepositoryImpl @Inject constructor(
     override suspend fun toggleAlarm(id: Long, isEnabled: Boolean) {
         alarmDao.toggleAlarm(id, isEnabled)
     }
+
+    override suspend fun getEnabledAlarms(): List<Alarm> {
+        return alarmDao.getEnabledAlarms().map { it.toDomain() }
+    }
 }

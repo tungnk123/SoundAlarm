@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.tungnk123.soundalarm.data.local.SoundAlarmDatabase
 import com.tungnk123.soundalarm.data.local.dao.AlarmDao
+import com.tungnk123.soundalarm.data.local.dao.AlarmDayTrackDao
 import com.tungnk123.soundalarm.data.local.dao.PlaylistDao
 import dagger.Module
 import dagger.Provides
@@ -38,5 +39,11 @@ object AppModule {
     @Singleton
     fun providePlaylistDao(database: SoundAlarmDatabase): PlaylistDao {
         return database.playlistDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAlarmDayTrackDao(database: SoundAlarmDatabase): AlarmDayTrackDao {
+        return database.alarmDayTrackDao()
     }
 }
