@@ -43,6 +43,12 @@
     <string name="label_delete_after_alarm_desc">Remove this alarm automatically after it rings</string>
     <string name="message_select_track_for">Select track for %s</string>
     <string name="message_no_tracks_in_playlist">No tracks in playlist. Add music from the home screen.</string>
+    <string name="label_go_to_playlist">Go to Playlist</string>
+    <string name="message_no_tracks_go_to_playlist">Tap to add music to your playlist, then come back to select a track.</string>
+    <string name="label_random_music">Play random music</string>
+    <string name="label_random_music_desc">Pick a random track from your playlist each time the alarm fires</string>
+    <string name="label_random_music_short">Random</string>
+    <string name="label_no_vibrate">No vibrate</string>
     <string name="message_music_selection_help">Choose which track plays for each day. \"Default\" applies when no specific day track is set.</string>
     <string name="message_tap_select_track">Tap to select track</string>
     <string name="button_select">Select</string>
@@ -68,6 +74,16 @@
     <string name="cd_edit_time">Edit time</string>
     <string name="button_cancel">Cancel</string>
     <string name="button_ok">OK</string>
+    <string name="button_delete">Delete</string>
+    <string name="button_remove">Remove</string>
+
+    <!-- Delete / Remove confirmation dialogs -->
+    <string name="dialog_delete_alarm_title">Delete Alarm</string>
+    <string name="dialog_delete_alarm_message">This alarm will be permanently deleted.</string>
+    <string name="dialog_remove_track_title">Remove Track</string>
+    <string name="dialog_remove_track_message">Remove \"%s\" from your playlist?</string>
+    <string name="dialog_remove_day_track_title">Remove Track</string>
+    <string name="dialog_remove_day_track_message">Remove the selected track for this day?</string>
 
     <!-- Snooze banner -->
     <string name="snooze_banner_title">Alarm Snoozed</string>

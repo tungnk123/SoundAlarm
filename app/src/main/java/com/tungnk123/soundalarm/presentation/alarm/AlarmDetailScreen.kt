@@ -28,12 +28,15 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Repeat
+import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -49,6 +52,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -75,10 +79,36 @@ import com.tungnk123.soundalarm.domain.model.DayOfWeek
 @Composable
 fun AlarmDetailScreen(
     onNavigateBack: () -> Unit,
+    onNavigateToPlaylist: () -> Unit,
     viewModel: AlarmDetailViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showTimePicker by remember { mutableStateOf(false) }
+    var dayKeyToRemove by remember { mutableStateOf<String?>(null) }
+
+    dayKeyToRemove?.let { dayKey ->
+        AlertDialog(
+            onDismissRequest = { dayKeyToRemove = null },
+            title = { Text(stringResource(R.string.dialog_remove_day_track_title)) },
+            text = { Text(stringResource(R.string.dialog_remove_day_track_message)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.removeTrackForDay(dayKey)
+                    dayKeyToRemove = null
+                }) {
+                    Text(
+                        text = stringResource(R.string.button_remove),
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { dayKeyToRemove = null }) {
+                    Text(stringResource(R.string.button_cancel))
+                }
+            },
+        )
+    }
 
     LaunchedEffect(uiState.isSaved) {
         if (uiState.isSaved) onNavigateBack()
@@ -145,11 +175,48 @@ fun AlarmDetailScreen(
             )
             HorizontalDivider()
             if (uiState.playlist.isEmpty()) {
-                Text(
-                    text = stringResource(R.string.message_no_tracks_in_playlist),
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(16.dp),
-                )
+                Card(
+                    onClick = {
+                        viewModel.dismissTrackPicker()
+                        onNavigateToPlaylist()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    ),
+                    shape = MaterialTheme.shapes.large,
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp, vertical = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PlaylistAdd,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                            modifier = Modifier.size(28.dp),
+                        )
+                        Column {
+                            Text(
+                                text = stringResource(R.string.label_go_to_playlist),
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                            )
+                            Text(
+                                text = stringResource(R.string.message_no_tracks_go_to_playlist),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f),
+                            )
+                        }
+                    }
+                }
+                Spacer(Modifier.height(16.dp))
             } else {
                 LazyColumn(contentPadding = PaddingValues(bottom = 32.dp)) {
                     items(uiState.playlist, key = { it.id }) { track ->
@@ -188,26 +255,28 @@ fun AlarmDetailScreen(
                         )
                     }
                 },
-                actions = {
-                    TextButton(
-                        onClick = { viewModel.saveAlarm() },
-                        modifier = Modifier.padding(end = 4.dp),
-                    ) {
-                        Icon(
-                            Icons.Default.Check,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp),
-                        )
-                        Text(
-                            text = stringResource(R.string.cd_save),
-                            modifier = Modifier.padding(start = 4.dp),
-                            fontWeight = FontWeight.SemiBold,
-                        )
-                    }
-                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                 ),
+            )
+        },
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = { viewModel.saveAlarm() },
+                icon = {
+                    Icon(
+                        Icons.Default.Check,
+                        contentDescription = null,
+                    )
+                },
+                text = {
+                    Text(
+                        text = stringResource(R.string.cd_save),
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
             )
         },
     ) { innerPadding ->
@@ -380,33 +449,69 @@ fun AlarmDetailScreen(
                         subtitle = stringResource(R.string.message_music_selection_help),
                     )
 
-                    DayTrackRow(
-                        label = stringResource(R.string.label_default_all_days),
-                        selection = uiState.dayTracks[AlarmDayTrack.DEFAULT_DAY],
-                        onSelectTrack = { viewModel.showTrackPickerForDay(AlarmDayTrack.DEFAULT_DAY) },
-                        onRemoveTrack = { viewModel.removeTrackForDay(AlarmDayTrack.DEFAULT_DAY) },
-                        showDivider = false,
+                    // Random music toggle
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                    ListItem(
+                        headlineContent = { Text(stringResource(R.string.label_random_music)) },
+                        supportingContent = { Text(stringResource(R.string.label_random_music_desc)) },
+                        leadingContent = {
+                            Icon(
+                                Icons.Default.Shuffle,
+                                contentDescription = null,
+                                tint = if (uiState.isRandomMusic)
+                                    MaterialTheme.colorScheme.primary
+                                else
+                                    MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        },
+                        trailingContent = {
+                            Switch(
+                                checked = uiState.isRandomMusic,
+                                onCheckedChange = { viewModel.toggleRandomMusic() },
+                            )
+                        },
+                        colors = ListItemDefaults.colors(
+                            containerColor = androidx.compose.ui.graphics.Color.Transparent,
+                        ),
                     )
 
-                    if (uiState.repeatDays.isNotEmpty()) {
-                        DayOfWeek.entries
-                            .filter { it in uiState.repeatDays }
-                            .forEach { day ->
-                                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-                                DayTrackRow(
-                                    label = day.shortName,
-                                    selection = uiState.dayTracks[day.name],
-                                    onSelectTrack = { viewModel.showTrackPickerForDay(day.name) },
-                                    onRemoveTrack = { viewModel.removeTrackForDay(day.name) },
-                                    showDivider = false,
-                                )
+                    AnimatedVisibility(
+                        visible = !uiState.isRandomMusic,
+                        enter = expandVertically(),
+                        exit = shrinkVertically(),
+                    ) {
+                        Column {
+                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                            DayTrackRow(
+                                label = stringResource(R.string.label_default_all_days),
+                                selection = uiState.dayTracks[AlarmDayTrack.DEFAULT_DAY],
+                                onSelectTrack = { viewModel.showTrackPickerForDay(AlarmDayTrack.DEFAULT_DAY) },
+                                onRemoveTrack = { dayKeyToRemove = AlarmDayTrack.DEFAULT_DAY },
+                                showDivider = false,
+                            )
+
+                            if (uiState.repeatDays.isNotEmpty()) {
+                                DayOfWeek.entries
+                                    .filter { it in uiState.repeatDays }
+                                    .forEach { day ->
+                                        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                                        DayTrackRow(
+                                            label = day.shortName,
+                                            selection = uiState.dayTracks[day.name],
+                                            onSelectTrack = { viewModel.showTrackPickerForDay(day.name) },
+                                            onRemoveTrack = { dayKeyToRemove = day.name },
+                                            showDivider = false,
+                                        )
+                                    }
                             }
+                        }
                     }
                     Spacer(Modifier.height(4.dp))
                 }
             }
 
-            Spacer(Modifier.height(16.dp))
+            // Extra bottom padding so content isn't hidden behind FAB
+            Spacer(Modifier.height(80.dp))
         }
     }
 }

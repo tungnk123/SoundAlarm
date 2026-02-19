@@ -112,22 +112,23 @@ fun HomeScreen(
                     }
                 }
                 else -> {
-                    LazyColumn(
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        uiState.snoozeState?.let { snooze ->
-                            item {
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        // Fixed header cards (do not scroll)
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .padding(top = 16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            uiState.snoozeState?.let { snooze ->
                                 SnoozeBannerCard(
                                     alarmLabel = snooze.alarmLabel,
                                     snoozeUntilMs = snooze.snoozeUntilMs,
                                     onCancelSnooze = { viewModel.cancelSnooze() },
                                 )
                             }
-                        }
-
-                        uiState.nextAlarmText?.let { text ->
-                            item {
+                            uiState.nextAlarmText?.let { text ->
                                 Card(
                                     modifier = Modifier.fillMaxWidth(),
                                     colors = CardDefaults.cardColors(
@@ -152,13 +153,21 @@ fun HomeScreen(
                                 }
                             }
                         }
-                        items(uiState.alarms, key = { it.id }) { alarm ->
-                            AlarmItem(
-                                alarm = alarm,
-                                onToggle = { viewModel.toggleAlarm(alarm.id, it) },
-                                onClick = { onNavigateToAlarmDetail(alarm.id) },
-                                onDelete = { viewModel.deleteAlarm(alarm) },
-                            )
+
+                        // Scrollable alarm list
+                        LazyColumn(
+                            contentPadding = PaddingValues(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.weight(1f),
+                        ) {
+                            items(uiState.alarms, key = { it.id }) { alarm ->
+                                AlarmItem(
+                                    alarm = alarm,
+                                    onToggle = { viewModel.toggleAlarm(alarm.id, it) },
+                                    onClick = { onNavigateToAlarmDetail(alarm.id) },
+                                    onDelete = { viewModel.deleteAlarm(alarm) },
+                                )
+                            }
                         }
                     }
                 }

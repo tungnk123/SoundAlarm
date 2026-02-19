@@ -145,7 +145,7 @@ class AlarmService : Service() {
             if (alarm?.isVibrate != false) {
                 withContext(Dispatchers.Main) { startVibration() }
             }
-            playTrackForAlarm(alarmId)
+            playTrackForAlarm(alarmId, alarm?.isRandomMusic == true)
         }
 
         return START_STICKY
@@ -223,8 +223,8 @@ class AlarmService : Service() {
         notificationManager.notify(SNOOZE_NOTIFICATION_ID, notification)
     }
 
-    private suspend fun playTrackForAlarm(alarmId: Long) {
-        val uriToPlay: Uri? = if (alarmId != INVALID_ALARM_ID) {
+    private suspend fun playTrackForAlarm(alarmId: Long, isRandom: Boolean = false) {
+        val uriToPlay: Uri? = if (!isRandom && alarmId != INVALID_ALARM_ID) {
             val dayTracks = alarmDayTrackRepository.getTracksForAlarmSync(alarmId)
             val todayName = LocalDate.now().dayOfWeek.toAlarmDay()
             val todayTrack = dayTracks.firstOrNull { it.dayOfWeek == todayName }

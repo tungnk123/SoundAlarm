@@ -39,6 +39,7 @@ data class AlarmDetailUiState(
     val dayTracks: Map<String, TrackSelection> = emptyMap(),
     val playlist: List<MusicTrack> = emptyList(),
     val showTrackPickerForDay: String? = null,
+    val isRandomMusic: Boolean = false,
 )
 
 @HiltViewModel
@@ -84,6 +85,7 @@ class AlarmDetailViewModel @Inject constructor(
                         deleteAfterFired = alarm.deleteAfterFired,
                         soundUri = alarm.soundUri,
                         isEditing = true,
+                        isRandomMusic = alarm.isRandomMusic,
                     )
                 }
             }
@@ -137,6 +139,10 @@ class AlarmDetailViewModel @Inject constructor(
         _uiState.update { it.copy(deleteAfterFired = !it.deleteAfterFired) }
     }
 
+    fun toggleRandomMusic() {
+        _uiState.update { it.copy(isRandomMusic = !it.isRandomMusic) }
+    }
+
     fun showTrackPickerForDay(dayKey: String) {
         _uiState.update { it.copy(showTrackPickerForDay = dayKey) }
     }
@@ -177,6 +183,7 @@ class AlarmDetailViewModel @Inject constructor(
                 isVibrate = state.isVibrate,
                 deleteAfterFired = state.deleteAfterFired,
                 soundUri = state.soundUri,
+                isRandomMusic = state.isRandomMusic,
             )
             val savedId = saveAlarmUseCase(alarm)
 

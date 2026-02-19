@@ -17,10 +17,11 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -56,8 +58,33 @@ fun PlaylistScreen(
 ) {
     val playlist by viewModel.playlist.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    var trackToDelete by remember { mutableStateOf<MusicTrack?>(null) }
 
     var localPlaylist by remember(playlist) { mutableStateOf(playlist) }
+
+    trackToDelete?.let { track ->
+        AlertDialog(
+            onDismissRequest = { trackToDelete = null },
+            title = { Text(stringResource(R.string.dialog_remove_track_title)) },
+            text = { Text(stringResource(R.string.dialog_remove_track_message, track.title)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.removeTrack(track)
+                    trackToDelete = null
+                }) {
+                    Text(
+                        text = stringResource(R.string.button_remove),
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { trackToDelete = null }) {
+                    Text(stringResource(R.string.button_cancel))
+                }
+            },
+        )
+    }
 
     val lazyListState = androidx.compose.foundation.lazy.rememberLazyListState()
     val reorderState = rememberReorderableLazyListState(
@@ -94,9 +121,13 @@ fun PlaylistScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onNavigateToAddMusic) {
-                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.cd_add_music))
-            }
+            ExtendedFloatingActionButton(
+                onClick = onNavigateToAddMusic,
+                icon = { Icon(Icons.Default.Add, contentDescription = null) },
+                text = { Text(stringResource(R.string.cd_add_music)) },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+            )
         }
     ) { paddingValues ->
         Box(
@@ -129,7 +160,7 @@ fun PlaylistScreen(
                                 track = track,
                                 isDragging = isDragging,
                                 elevation = elevation,
-                                onDelete = { viewModel.removeTrack(track) },
+                                onDelete = { trackToDelete = track },
                                 dragHandle = {
                                     IconButton(
                                         modifier = Modifier.draggableHandle(

@@ -45,6 +45,7 @@ fun NavGraph(
         ) {
             AlarmDetailScreen(
                 onNavigateBack = { navController.popBackStack() },
+                onNavigateToPlaylist = { navController.navigate(Screen.Playlist.route) },
             )
         }
         composable(Screen.Settings.route) {
