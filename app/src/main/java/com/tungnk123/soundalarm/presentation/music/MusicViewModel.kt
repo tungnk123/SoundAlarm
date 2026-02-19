@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tungnk123.soundalarm.domain.model.MusicTrack
 import com.tungnk123.soundalarm.domain.repository.MusicRepository
+import com.tungnk123.soundalarm.domain.repository.PlaylistRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +23,7 @@ sealed interface MusicUiState {
 @HiltViewModel
 class MusicViewModel @Inject constructor(
     private val repository: MusicRepository,
-    private val playlistRepository: com.tungnk123.soundalarm.domain.repository.PlaylistRepository, // Add explicit type or import
+    private val playlistRepository: PlaylistRepository,
     private val audioPlayer: MusicAudioPlayer
 ) : ViewModel() {
 

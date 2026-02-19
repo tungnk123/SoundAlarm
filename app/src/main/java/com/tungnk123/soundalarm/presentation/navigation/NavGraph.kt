@@ -30,7 +30,7 @@ fun NavGraph(
                     navController.navigate(Screen.Settings.route)
                 },
                 onNavigateToMusicSelection = {
-                    navController.navigate(Screen.Playlist.route) // Change to Playlist
+                    navController.navigate(Screen.Playlist.route)
                 },
                 onNavigateToNewAlarm = {
                     navController.navigate(Screen.AlarmDetail.createRoute(0L))

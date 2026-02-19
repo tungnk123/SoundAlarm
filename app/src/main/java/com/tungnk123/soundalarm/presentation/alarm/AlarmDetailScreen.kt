@@ -54,10 +54,6 @@ fun AlarmDetailScreen(
     viewModel: AlarmDetailViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    // key(uiState.isEditing): rememberTimePickerState only uses initialHour/initialMinute on
-    // first composition. The ViewModel loads alarm data async, so without key the picker would
-    // always start at the default 8:00. When isEditing flips true (data loaded), the key
-    // changes and the state reinitialises with the real alarm time.
     val timePickerState = key(uiState.isEditing) {
         rememberTimePickerState(
             initialHour = uiState.hour,
@@ -70,10 +66,8 @@ fun AlarmDetailScreen(
         if (uiState.isSaved) onNavigateBack()
     }
 
-    // rememberModalBottomSheetState must be called unconditionally (Compose rules)
     val trackPickerSheetState = rememberModalBottomSheetState()
 
-    // Track picker bottom sheet
     if (uiState.showTrackPickerForDay != null) {
         val dayKey = uiState.showTrackPickerForDay!!
         val dayLabel = if (dayKey == AlarmDayTrack.DEFAULT_DAY) "Default"
@@ -136,7 +130,6 @@ fun AlarmDetailScreen(
             )
         },
     ) { innerPadding ->
-        // verticalScroll fixes the scroll bug — content can overflow the TimePicker height
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -186,7 +179,6 @@ fun AlarmDetailScreen(
                 )
             }
 
-            // Music per day section
             HorizontalDivider()
             Text(
                 text = "Music",

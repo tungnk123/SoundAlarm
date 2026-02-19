@@ -103,9 +103,8 @@ fun MusicSelectionScreen(
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .clickable { 
+                                        .clickable {
                                             viewModel.addToPlaylist(track)
-                                            // Optionally show feedback
                                         }
                                         .padding(8.dp),
                                     verticalAlignment = Alignment.CenterVertically

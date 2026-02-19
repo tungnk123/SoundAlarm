@@ -30,7 +30,6 @@ class AlarmReceiver : BroadcastReceiver() {
         }
     }
 
-    /** Called on device boot — restores all enabled alarms lost when AlarmManager was cleared. */
     private fun rescheduleAllEnabledAlarms() {
         val pendingResult = goAsync()
         CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
@@ -44,7 +43,6 @@ class AlarmReceiver : BroadcastReceiver() {
         }
     }
 
-    /** Called when a scheduled alarm fires: starts AlarmService and re-schedules if repeating. */
     private fun handleAlarmFired(context: Context, intent: Intent) {
         val alarmId = intent.getLongExtra("ALARM_ID", -1L)
         val alarmLabel = intent.getStringExtra("ALARM_LABEL") ?: "Alarm"
@@ -61,7 +59,6 @@ class AlarmReceiver : BroadcastReceiver() {
             context.startService(serviceIntent)
         }
 
-        // For repeating alarms, schedule the next occurrence after this one fires.
         val pendingResult = goAsync()
         CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
             try {

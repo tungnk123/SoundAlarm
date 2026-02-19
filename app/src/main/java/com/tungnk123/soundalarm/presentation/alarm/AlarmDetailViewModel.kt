@@ -34,10 +34,8 @@ data class AlarmDetailUiState(
     val soundUri: String? = null,
     val isEditing: Boolean = false,
     val isSaved: Boolean = false,
-    // Key = DayOfWeek.name or AlarmDayTrack.DEFAULT_DAY
     val dayTracks: Map<String, TrackSelection> = emptyMap(),
     val playlist: List<MusicTrack> = emptyList(),
-    // Which day slot is currently showing the track picker
     val showTrackPickerForDay: String? = null,
 )
 
@@ -166,7 +164,6 @@ class AlarmDetailViewModel @Inject constructor(
             )
             val savedId = saveAlarmUseCase(alarm)
 
-            // Persist day-track selections
             alarmDayTrackRepository.deleteAllTracksForAlarm(savedId)
             state.dayTracks.forEach { (dayKey, selection) ->
                 alarmDayTrackRepository.setTrackForDay(
