@@ -6,90 +6,79 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import com.tungnk123.soundalarm.domain.model.Alarm
+import com.tungnk123.soundalarm.domain.model.DayOfWeek as AppDayOfWeek
 import com.tungnk123.soundalarm.domain.scheduler.AlarmScheduler
 import com.tungnk123.soundalarm.presentation.scheduler.AlarmReceiver
+import com.tungnk123.soundalarm.presentation.service.AlarmService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.LocalDateTime
 import java.time.ZoneId
 import javax.inject.Inject
 
 class AndroidAlarmScheduler @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
 ) : AlarmScheduler {
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     override fun schedule(alarm: Alarm) {
-        val intent = Intent(context, AlarmReceiver::class.java).apply {
-            putExtra("ALARM_ID", alarm.id)
-            putExtra("ALARM_LABEL", alarm.label)
-        }
-        
-        // Use alarm.id.toInt() for requestCode. Ensure it is unique.
-        val pendingIntent = PendingIntent.getBroadcast(
-            context,
-            alarm.id.toInt(), 
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        // Calculate next alarm time
-        val now = LocalDateTime.now()
-        var alarmTime = now.withHour(alarm.hour).withMinute(alarm.minute).withSecond(0).withNano(0)
-
-        if (alarmTime.isBefore(now)) {
-            alarmTime = alarmTime.plusDays(1)
-        }
-        
-        // Handle repeat logic if needed currently or just schedule next instance
-        // For simplicity, we just schedule the *next* occurrence.
-        // If alarm has repeat days, we need to find the next matching day.
-        if (alarm.repeatDays.isNotEmpty()) {
-             // Logic to find next matching day
-             // ... avoiding complex logic for now, assuming simple daily or next occurrence for this step is enough for the prototype
-             // Refinement: If today doesn't match and it's already past time, or today doesn't match at all...
-             // Let's stick to simple logic: "Next occurrence" logic from TimeFormatter? 
-             // Ideally we find the next valid day.
-             while (!alarm.repeatDays.contains(com.tungnk123.soundalarm.domain.model.DayOfWeek.valueOf(alarmTime.dayOfWeek.name)) && alarm.repeatDays.isNotEmpty()) {
-                 alarmTime = alarmTime.plusDays(1)
-             }
-        }
-
-        val millis = alarmTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        val pendingIntent = buildPendingIntent(alarm)
+        val triggerAtMillis = nextTriggerTime(alarm)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (alarmManager.canScheduleExactAlarms()) {
-                alarmManager.setExactAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    millis,
-                    pendingIntent
-                )
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent)
             } else {
-                 // Fallback or request permission? 
-                 // For now assumes permission is/will be granted.
-                 alarmManager.setAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    millis,
-                    pendingIntent
-                )
+                alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent)
             }
         } else {
-            alarmManager.setExactAndAllowWhileIdle(
-                AlarmManager.RTC_WAKEUP,
-                millis,
-                pendingIntent
-            )
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent)
         }
     }
 
     override fun cancel(alarm: Alarm) {
-        val intent = Intent(context, AlarmReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(
+        alarmManager.cancel(buildPendingIntent(alarm))
+    }
+
+    private fun buildPendingIntent(alarm: Alarm): PendingIntent {
+        val intent = Intent(context, AlarmReceiver::class.java).apply {
+            putExtra(AlarmService.EXTRA_ALARM_ID, alarm.id)
+            putExtra(AlarmService.EXTRA_ALARM_LABEL, alarm.label)
+        }
+        return PendingIntent.getBroadcast(
             context,
             alarm.id.toInt(),
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
-        alarmManager.cancel(pendingIntent)
     }
+
+    private fun nextTriggerTime(alarm: Alarm): Long {
+        val now = LocalDateTime.now()
+        var candidate = now
+            .withHour(alarm.hour)
+            .withMinute(alarm.minute)
+            .withSecond(0)
+            .withNano(0)
+
+        if (!candidate.isAfter(now)) {
+            candidate = candidate.plusDays(1)
+        }
+
+        if (alarm.repeatDays.isEmpty()) {
+            return candidate.toEpochMilli()
+        }
+
+        for (i in 0 until 7) {
+            if (AppDayOfWeek.valueOf(candidate.dayOfWeek.name) in alarm.repeatDays) {
+                return candidate.toEpochMilli()
+            }
+            candidate = candidate.plusDays(1)
+        }
+
+        return candidate.toEpochMilli()
+    }
+
+    private fun LocalDateTime.toEpochMilli(): Long =
+        atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 }

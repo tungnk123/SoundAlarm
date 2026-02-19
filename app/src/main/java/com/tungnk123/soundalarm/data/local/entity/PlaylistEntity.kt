@@ -1,9 +1,9 @@
 package com.tungnk123.soundalarm.data.local.entity
 
+import android.net.Uri
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.tungnk123.soundalarm.domain.model.MusicTrack
-import android.net.Uri
 
 @Entity(tableName = "playlist")
 data class PlaylistEntity(
@@ -12,7 +12,8 @@ data class PlaylistEntity(
     val title: String,
     val artist: String,
     val duration: Long,
-    val contentUri: String
+    val contentUri: String,
+    val sortOrder: Int = 0,
 ) {
     fun toDomain(): MusicTrack = MusicTrack(
         id = id,
@@ -23,11 +24,12 @@ data class PlaylistEntity(
     )
 
     companion object {
-        fun fromDomain(track: MusicTrack): PlaylistEntity = PlaylistEntity(
+        fun fromDomain(track: MusicTrack, sortOrder: Int = 0): PlaylistEntity = PlaylistEntity(
             title = track.title,
             artist = track.artist,
             duration = track.duration,
-            contentUri = track.contentUri.toString()
+            contentUri = track.contentUri.toString(),
+            sortOrder = sortOrder,
         )
     }
 }

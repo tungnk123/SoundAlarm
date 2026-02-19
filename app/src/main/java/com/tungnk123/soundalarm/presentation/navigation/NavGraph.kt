@@ -30,7 +30,7 @@ fun NavGraph(
                     navController.navigate(Screen.Settings.route)
                 },
                 onNavigateToMusicSelection = {
-                    navController.navigate(Screen.Playlist.route) // Change to Playlist
+                    navController.navigate(Screen.Playlist.route)
                 },
                 onNavigateToNewAlarm = {
                     navController.navigate(Screen.AlarmDetail.createRoute(0L))
@@ -53,7 +53,9 @@ fun NavGraph(
             )
         }
         composable(Screen.MusicSelection.route) {
-            com.tungnk123.soundalarm.presentation.music.MusicSelectionScreen()
+            com.tungnk123.soundalarm.presentation.music.MusicSelectionScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
         composable(Screen.Playlist.route) {
             com.tungnk123.soundalarm.presentation.playlist.PlaylistScreen(

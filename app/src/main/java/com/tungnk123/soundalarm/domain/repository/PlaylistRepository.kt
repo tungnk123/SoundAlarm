@@ -8,4 +8,5 @@ interface PlaylistRepository {
     suspend fun getPlaylistTracks(): List<MusicTrack>
     suspend fun addTrack(track: MusicTrack)
     suspend fun removeTrack(track: MusicTrack)
+    suspend fun updateTrackOrder(tracks: List<MusicTrack>)
 }

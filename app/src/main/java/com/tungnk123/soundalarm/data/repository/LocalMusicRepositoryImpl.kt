@@ -50,8 +50,9 @@ class LocalMusicRepositoryImpl @Inject constructor(
 
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(idColumn)
-                val title = cursor.getString(titleColumn)
-                val artist = cursor.getString(artistColumn)
+                val title = cursor.getString(titleColumn) ?: ""
+                val rawArtist = cursor.getString(artistColumn) ?: ""
+                val artist = if (rawArtist == "<unknown>") "" else rawArtist
                 val duration = cursor.getLong(durationColumn)
 
                 val contentUri = ContentUris.withAppendedId(

@@ -29,4 +29,7 @@ interface AlarmDao {
 
     @Query("UPDATE alarms SET isEnabled = :isEnabled WHERE id = :id")
     suspend fun toggleAlarm(id: Long, isEnabled: Boolean)
+
+    @Query("SELECT * FROM alarms WHERE isEnabled = 1")
+    suspend fun getEnabledAlarms(): List<AlarmEntity>
 }

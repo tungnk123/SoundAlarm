@@ -16,6 +16,7 @@ data class AlarmEntity(
     val repeatDays: String = "",
     val soundUri: String? = null,
     val isVibrate: Boolean = true,
+    val deleteAfterFired: Boolean = false,
 ) {
     fun toDomain(): Alarm = Alarm(
         id = id,
@@ -29,6 +30,7 @@ data class AlarmEntity(
             .toSet(),
         soundUri = soundUri,
         isVibrate = isVibrate,
+        deleteAfterFired = deleteAfterFired,
     )
 
     companion object {
@@ -41,6 +43,7 @@ data class AlarmEntity(
             repeatDays = alarm.repeatDays.joinToString(",") { it.name },
             soundUri = alarm.soundUri,
             isVibrate = alarm.isVibrate,
+            deleteAfterFired = alarm.deleteAfterFired,
         )
     }
 }

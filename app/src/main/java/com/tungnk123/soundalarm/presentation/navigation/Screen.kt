@@ -7,5 +7,5 @@ sealed class Screen(val route: String) {
     }
     data object Settings : Screen("settings")
     data object MusicSelection : Screen("music_selection")
-    data object Playlist : Screen("playlist") // Add Playlist route
+    data object Playlist : Screen("playlist")
 }
