@@ -1,5 +1,7 @@
 package com.tungnk123.soundalarm.presentation.home.components
 
+import com.tungnk123.soundalarm.presentation.common.components.InfoChip
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -149,13 +151,13 @@ fun AlarmItem(
             ) {
                 if (isOneTime) {
                     // One-time badge
-                    AlarmInfoChip(
+                    InfoChip(
                         icon = Icons.Default.RepeatOne,
                         label = stringResource(R.string.label_one_time),
                     )
                     // Delete after fired badge
                     if (alarm.deleteAfterFired) {
-                        AlarmInfoChip(
+                        InfoChip(
                             icon = Icons.Default.DeleteForever,
                             label = stringResource(R.string.label_delete_after_alarm),
                             tint = MaterialTheme.colorScheme.error,
@@ -163,14 +165,14 @@ fun AlarmItem(
                     }
                 } else {
                     // Repeat days badge
-                    AlarmInfoChip(
+                    InfoChip(
                         icon = Icons.Default.Repeat,
                         label = alarm.repeatDays.joinToString(" ") { it.shortName },
                     )
                 }
 
                 // Music badge
-                AlarmInfoChip(
+                InfoChip(
                     icon = if (alarm.isRandomMusic) Icons.Default.Shuffle else Icons.Default.MusicNote,
                     label = if (alarm.isRandomMusic)
                         stringResource(R.string.label_random_music_short)
@@ -183,44 +185,12 @@ fun AlarmItem(
                 )
 
                 // Vibrate badge
-                AlarmInfoChip(
+                InfoChip(
                     icon = if (alarm.isVibrate) Icons.Default.VolumeUp else Icons.Default.VolumeOff,
                     label = if (alarm.isVibrate) stringResource(R.string.label_vibrate)
                     else stringResource(R.string.label_no_vibrate),
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun AlarmInfoChip(
-    icon: ImageVector,
-    label: String,
-    tint: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.onSurfaceVariant,
-) {
-    val chipShape = RoundedCornerShape(50)
-    Row(
-        modifier = Modifier
-            .border(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.outlineVariant,
-                shape = chipShape,
-            )
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            modifier = Modifier.size(14.dp),
-            tint = tint,
-        )
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelSmall,
-            color = tint,
-        )
     }
 }

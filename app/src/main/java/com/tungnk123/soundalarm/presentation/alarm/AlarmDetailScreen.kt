@@ -1,8 +1,5 @@
 package com.tungnk123.soundalarm.presentation.alarm
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,30 +12,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.PlaylistAdd
-import androidx.compose.material.icons.filled.Repeat
-import androidx.compose.material.icons.filled.RepeatOne
-import androidx.compose.material.icons.filled.Shuffle
-import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -48,7 +35,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
@@ -75,6 +61,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tungnk123.soundalarm.R
 import com.tungnk123.soundalarm.domain.model.AlarmDayTrack
 import com.tungnk123.soundalarm.domain.model.DayOfWeek
+import com.tungnk123.soundalarm.presentation.alarm.components.MusicSelectionCard
+import com.tungnk123.soundalarm.presentation.alarm.components.ScheduleCard
+import com.tungnk123.soundalarm.presentation.alarm.components.TimePickerCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -335,45 +324,12 @@ fun AlarmDetailScreen(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            // ── Time picker card ──────────────────────────────────────────
-            Card(
+            TimePickerCard(
+                hour = uiState.hour,
+                minute = uiState.minute,
                 onClick = { showTimePicker = true },
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                ),
-                shape = MaterialTheme.shapes.extraLarge,
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 28.dp, vertical = 24.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Column {
-                        Text(
-                            text = "%02d:%02d".format(uiState.hour, uiState.minute),
-                            style = MaterialTheme.typography.displayLarge,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            fontWeight = FontWeight.Light,
-                        )
-                        Text(
-                            text = stringResource(R.string.label_tap_to_change_time),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
-                        )
-                    }
-                    Icon(
-                        imageVector = Icons.Default.AccessTime,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.6f),
-                        modifier = Modifier.size(36.dp),
-                    )
-                }
-            }
+            )
 
-            // ── Label ─────────────────────────────────────────────────────
             OutlinedTextField(
                 value = uiState.label,
                 onValueChange = viewModel::updateLabel,
@@ -386,411 +342,26 @@ fun AlarmDetailScreen(
                 shape = MaterialTheme.shapes.medium,
             )
 
-            // ── Schedule card ─────────────────────────────────────────────
-            ElevatedCard(
-                modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.large,
-            ) {
-                Column {
-                    SectionHeader(
-                        icon = {
-                            Icon(
-                                Icons.Default.Repeat,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp),
-                            )
-                        },
-                        title = stringResource(R.string.label_repeat),
-                    )
+            ScheduleCard(
+                repeatDays = uiState.repeatDays,
+                isVibrate = uiState.isVibrate,
+                deleteAfterFired = uiState.deleteAfterFired,
+                onToggleDay = { viewModel.toggleDay(it) },
+                onSetOneTime = viewModel::setOneTime,
+                onToggleVibrate = { viewModel.toggleVibrate() },
+                onToggleDeleteAfterFired = { viewModel.toggleDeleteAfterFired() },
+            )
 
-                    // Day circle selector
-                    DaySelector(
-                        repeatDays = uiState.repeatDays,
-                        onToggleDay = { viewModel.toggleDay(it) },
-                    )
-
-                    // Status row
-                    val isOneTime = uiState.repeatDays.isEmpty()
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            imageVector = if (isOneTime) Icons.Default.RepeatOne else Icons.Default.Repeat,
-                            contentDescription = null,
-                            modifier = Modifier.size(14.dp),
-                            tint = if (isOneTime) MaterialTheme.colorScheme.onSurfaceVariant
-                            else MaterialTheme.colorScheme.primary,
-                        )
-                        Spacer(Modifier.width(6.dp))
-                        Text(
-                            text = if (isOneTime) stringResource(R.string.label_one_time_alarm)
-                            else stringResource(
-                                R.string.label_repeats_days,
-                                uiState.repeatDays.joinToString(", ") { it.shortName },
-                            ),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = if (isOneTime) MaterialTheme.colorScheme.onSurfaceVariant
-                            else MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.weight(1f),
-                        )
-                        if (!isOneTime) {
-                            TextButton(
-                                onClick = viewModel::setOneTime,
-                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.button_clear),
-                                    style = MaterialTheme.typography.labelSmall,
-                                )
-                            }
-                        }
-                    }
-
-                    Spacer(Modifier.height(4.dp))
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-                    // Vibrate toggle
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            Icons.Default.VolumeUp,
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        Spacer(Modifier.width(12.dp))
-                        Text(
-                            text = stringResource(R.string.label_vibrate),
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.weight(1f),
-                        )
-                        Switch(
-                            checked = uiState.isVibrate,
-                            onCheckedChange = { viewModel.toggleVibrate() },
-                        )
-                    }
-
-                    // Delete after alarm — only for one-time alarms
-                    AnimatedVisibility(
-                        visible = uiState.repeatDays.isEmpty(),
-                        enter = expandVertically(),
-                        exit = shrinkVertically(),
-                    ) {
-                        Column {
-                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Icon(
-                                    Icons.Default.DeleteForever,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(20.dp),
-                                    tint = if (uiState.deleteAfterFired)
-                                        MaterialTheme.colorScheme.error
-                                    else
-                                        MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                                Spacer(Modifier.width(12.dp))
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = stringResource(R.string.label_delete_after_alarm),
-                                        style = MaterialTheme.typography.bodyMedium,
-                                    )
-                                    Text(
-                                        text = stringResource(R.string.label_delete_after_alarm_desc),
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    )
-                                }
-                                Switch(
-                                    checked = uiState.deleteAfterFired,
-                                    onCheckedChange = { viewModel.toggleDeleteAfterFired() },
-                                )
-                            }
-                        }
-                    }
-                    Spacer(Modifier.height(8.dp))
-                }
-            }
-
-            // ── Music card ────────────────────────────────────────────────
-            ElevatedCard(
-                modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.large,
-            ) {
-                Column {
-                    SectionHeader(
-                        icon = {
-                            Icon(
-                                Icons.Default.MusicNote,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp),
-                            )
-                        },
-                        title = stringResource(R.string.label_music),
-                        subtitle = stringResource(R.string.message_music_selection_help),
-                    )
-
-                    // Random music toggle
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(36.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(
-                                    if (uiState.isRandomMusic)
-                                        MaterialTheme.colorScheme.primaryContainer
-                                    else
-                                        MaterialTheme.colorScheme.surfaceContainerHighest
-                                ),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Icon(
-                                Icons.Default.Shuffle,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp),
-                                tint = if (uiState.isRandomMusic)
-                                    MaterialTheme.colorScheme.primary
-                                else
-                                    MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                        Spacer(Modifier.width(12.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = stringResource(R.string.label_random_music),
-                                style = MaterialTheme.typography.bodyMedium,
-                            )
-                            Text(
-                                text = stringResource(R.string.label_random_music_desc),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                        Switch(
-                            checked = uiState.isRandomMusic,
-                            onCheckedChange = { viewModel.toggleRandomMusic() },
-                        )
-                    }
-
-                    AnimatedVisibility(
-                        visible = !uiState.isRandomMusic,
-                        enter = expandVertically(),
-                        exit = shrinkVertically(),
-                    ) {
-                        Column {
-                            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-                            Spacer(Modifier.height(4.dp))
-
-                            DayTrackRow(
-                                label = stringResource(R.string.label_default_all_days),
-                                selection = uiState.dayTracks[AlarmDayTrack.DEFAULT_DAY],
-                                onSelectTrack = { viewModel.showTrackPickerForDay(AlarmDayTrack.DEFAULT_DAY) },
-                                onRemoveTrack = { dayKeyToRemove = AlarmDayTrack.DEFAULT_DAY },
-                            )
-
-                            if (uiState.repeatDays.isNotEmpty()) {
-                                HorizontalDivider(
-                                    modifier = Modifier.padding(horizontal = 16.dp),
-                                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
-                                )
-                                DayOfWeek.entries
-                                    .filter { it in uiState.repeatDays }
-                                    .forEach { day ->
-                                        DayTrackRow(
-                                            label = day.shortName,
-                                            selection = uiState.dayTracks[day.name],
-                                            onSelectTrack = { viewModel.showTrackPickerForDay(day.name) },
-                                            onRemoveTrack = { dayKeyToRemove = day.name },
-                                        )
-                                        HorizontalDivider(
-                                            modifier = Modifier.padding(horizontal = 16.dp),
-                                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
-                                        )
-                                    }
-                            }
-                            Spacer(Modifier.height(4.dp))
-                        }
-                    }
-                    Spacer(Modifier.height(4.dp))
-                }
-            }
+            MusicSelectionCard(
+                isRandomMusic = uiState.isRandomMusic,
+                dayTracks = uiState.dayTracks,
+                repeatDays = uiState.repeatDays,
+                onToggleRandomMusic = { viewModel.toggleRandomMusic() },
+                onShowTrackPickerForDay = { viewModel.showTrackPickerForDay(it) },
+                onRemoveTrackForDay = { dayKeyToRemove = it },
+            )
 
             Spacer(Modifier.height(80.dp))
-        }
-    }
-}
-
-// ── Sub-composables ────────────────────────────────────────────────────────────
-
-@Composable
-private fun SectionHeader(
-    icon: @Composable () -> Unit,
-    title: String,
-    subtitle: String? = null,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                start = 16.dp,
-                end = 16.dp,
-                top = 16.dp,
-                bottom = if (subtitle != null) 2.dp else 12.dp,
-            ),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Box(Modifier.size(18.dp)) { icon() }
-        Column {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.SemiBold,
-            )
-            if (subtitle != null) {
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun DaySelector(
-    repeatDays: Set<DayOfWeek>,
-    onToggleDay: (DayOfWeek) -> Unit,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        DayOfWeek.entries.forEach { day ->
-            val isSelected = day in repeatDays
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(
-                            if (isSelected) MaterialTheme.colorScheme.primary
-                            else MaterialTheme.colorScheme.surfaceContainerHighest,
-                        )
-                        .clickable { onToggleDay(day) },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = day.shortName.take(1),
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = if (isSelected) MaterialTheme.colorScheme.onPrimary
-                        else MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-                Text(
-                    text = day.shortName,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = if (isSelected) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun DayTrackRow(
-    label: String,
-    selection: TrackSelection?,
-    onSelectTrack: () -> Unit,
-    onRemoveTrack: () -> Unit,
-) {
-    val isSelected = selection != null
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onSelectTrack)
-            .padding(horizontal = 16.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        Box(
-            modifier = Modifier
-                .size(44.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(
-                    if (isSelected) MaterialTheme.colorScheme.primaryContainer
-                    else MaterialTheme.colorScheme.surfaceContainerHighest,
-                ),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = Icons.Default.MusicNote,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
-                tint = if (isSelected) MaterialTheme.colorScheme.primary
-                else MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            if (isSelected) {
-                Text(
-                    text = selection!!.trackTitle,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            } else {
-                Text(
-                    text = stringResource(R.string.message_tap_select_track),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        }
-        if (isSelected) {
-            IconButton(
-                onClick = onRemoveTrack,
-                modifier = Modifier.size(36.dp),
-            ) {
-                Icon(
-                    Icons.Default.Close,
-                    contentDescription = stringResource(R.string.cd_remove_track),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(18.dp),
-                )
-            }
         }
     }
 }

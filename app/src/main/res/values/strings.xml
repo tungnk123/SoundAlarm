@@ -29,6 +29,14 @@
     <string name="message_next_alarm_minutes">Next alarm in %1$d minute(s)</string>
     <string name="message_next_alarm_soon">Alarm ringing soon</string>
 
+    <!-- Home Screen Tutorial -->
+    <string name="tutorial_title">Welcome to Sound Alarm!</string>
+    <string name="tutorial_step1_title">Step 1: Create a Playlist</string>
+    <string name="tutorial_step1_desc">Add your favorite local music to a playlist so you can wake up to it.</string>
+    <string name="tutorial_btn_create_playlist">Create Playlist</string>
+    <string name="tutorial_step2_title">Step 2: Set an Alarm</string>
+    <string name="tutorial_step2_desc">Tap the + button below to create an alarm and select your playlist.</string>
+
     <!-- Alarm Detail Screen -->
     <string name="label_alarm_label">Label</string>
     <string name="label_repeat">Repeat</string>

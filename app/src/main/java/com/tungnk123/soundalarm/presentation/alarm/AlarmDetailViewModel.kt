@@ -20,11 +20,8 @@ import kotlinx.coroutines.launch
 import java.time.LocalTime
 import javax.inject.Inject
 
-data class TrackSelection(
-    val trackUri: String,
-    val trackTitle: String,
-    val trackArtist: String,
-)
+import com.tungnk123.soundalarm.domain.model.TrackSelection
+
 
 data class AlarmDetailUiState(
     val hour: Int = LocalTime.now().hour,
