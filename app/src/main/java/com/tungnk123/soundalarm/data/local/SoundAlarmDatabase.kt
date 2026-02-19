@@ -11,7 +11,7 @@ import com.tungnk123.soundalarm.data.local.entity.PlaylistEntity
 
 @Database(
     entities = [AlarmEntity::class, PlaylistEntity::class, AlarmDayTrackEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = true,
 )
 abstract class SoundAlarmDatabase : RoomDatabase() {

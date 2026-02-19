@@ -41,9 +41,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.tungnk123.soundalarm.R
 import com.tungnk123.soundalarm.domain.model.AlarmDayTrack
 import com.tungnk123.soundalarm.domain.model.DayOfWeek
 
@@ -67,10 +69,11 @@ fun AlarmDetailScreen(
     }
 
     val trackPickerSheetState = rememberModalBottomSheetState()
+    val defaultLabel = stringResource(R.string.label_default)
 
     if (uiState.showTrackPickerForDay != null) {
         val dayKey = uiState.showTrackPickerForDay!!
-        val dayLabel = if (dayKey == AlarmDayTrack.DEFAULT_DAY) "Default"
+        val dayLabel = if (dayKey == AlarmDayTrack.DEFAULT_DAY) defaultLabel
         else DayOfWeek.valueOf(dayKey).shortName
 
         ModalBottomSheet(
@@ -78,14 +81,14 @@ fun AlarmDetailScreen(
             sheetState = trackPickerSheetState,
         ) {
             Text(
-                text = "Select track for $dayLabel",
+                text = stringResource(R.string.message_select_track_for, dayLabel),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             )
             HorizontalDivider()
             if (uiState.playlist.isEmpty()) {
                 Text(
-                    text = "No tracks in playlist. Add music from the home screen.",
+                    text = stringResource(R.string.message_no_tracks_in_playlist),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(16.dp),
                 )
@@ -94,7 +97,9 @@ fun AlarmDetailScreen(
                     items(uiState.playlist, key = { it.id }) { track ->
                         ListItem(
                             headlineContent = { Text(track.title) },
-                            supportingContent = { Text(track.artist) },
+                            supportingContent = if (track.artist.isNotBlank() && track.artist != "<unknown>") {
+                                { Text(track.artist) }
+                            } else null,
                             leadingContent = {
                                 Icon(Icons.Default.MusicNote, contentDescription = null)
                             },
@@ -112,11 +117,14 @@ fun AlarmDetailScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(if (uiState.isEditing) "Edit Alarm" else "New Alarm")
+                    Text(
+                        if (uiState.isEditing) stringResource(R.string.title_alarm_detail_edit)
+                        else stringResource(R.string.title_alarm_detail_new)
+                    )
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.cd_back))
                     }
                 },
                 actions = {
@@ -124,7 +132,7 @@ fun AlarmDetailScreen(
                         viewModel.updateTime(timePickerState.hour, timePickerState.minute)
                         viewModel.saveAlarm()
                     }) {
-                        Icon(Icons.Default.Check, contentDescription = "Save")
+                        Icon(Icons.Default.Check, contentDescription = stringResource(R.string.cd_save))
                     }
                 },
             )
@@ -144,13 +152,13 @@ fun AlarmDetailScreen(
             OutlinedTextField(
                 value = uiState.label,
                 onValueChange = viewModel::updateLabel,
-                label = { Text("Label") },
+                label = { Text(stringResource(R.string.label_alarm_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
             )
 
             Text(
-                text = "Repeat",
+                text = stringResource(R.string.label_repeat),
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -172,7 +180,7 @@ fun AlarmDetailScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text("Vibrate", style = MaterialTheme.typography.bodyLarge)
+                Text(stringResource(R.string.label_vibrate), style = MaterialTheme.typography.bodyLarge)
                 Switch(
                     checked = uiState.isVibrate,
                     onCheckedChange = { viewModel.toggleVibrate() },
@@ -181,19 +189,19 @@ fun AlarmDetailScreen(
 
             HorizontalDivider()
             Text(
-                text = "Music",
+                text = stringResource(R.string.label_music),
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.fillMaxWidth(),
             )
             Text(
-                text = "Choose which track plays for each day. \"Default\" applies when no specific day track is set.",
+                text = stringResource(R.string.message_music_selection_help),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.fillMaxWidth(),
             )
 
             DayTrackRow(
                 dayKey = AlarmDayTrack.DEFAULT_DAY,
-                label = "Default (all days)",
+                label = stringResource(R.string.label_default_all_days),
                 selection = uiState.dayTracks[AlarmDayTrack.DEFAULT_DAY],
                 onSelectTrack = { viewModel.showTrackPickerForDay(AlarmDayTrack.DEFAULT_DAY) },
                 onRemoveTrack = { viewModel.removeTrackForDay(AlarmDayTrack.DEFAULT_DAY) },
@@ -253,7 +261,7 @@ private fun DayTrackRow(
                 )
             } else {
                 Text(
-                    text = "Tap to select track",
+                    text = stringResource(R.string.message_tap_select_track),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -261,11 +269,11 @@ private fun DayTrackRow(
         }
         if (selection != null) {
             IconButton(onClick = onRemoveTrack) {
-                Icon(Icons.Default.Close, contentDescription = "Remove track")
+                Icon(Icons.Default.Close, contentDescription = stringResource(R.string.cd_remove_track))
             }
         } else {
             TextButton(onClick = onSelectTrack) {
-                Text("Select")
+                Text(stringResource(R.string.button_select))
             }
         }
     }

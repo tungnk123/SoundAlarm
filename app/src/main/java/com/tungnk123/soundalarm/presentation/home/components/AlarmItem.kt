@@ -18,7 +18,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.tungnk123.soundalarm.R
 import com.tungnk123.soundalarm.domain.model.Alarm
 
 @Composable
@@ -76,7 +78,7 @@ fun AlarmItem(
             IconButton(onClick = onDelete) {
                 Icon(
                     Icons.Default.Delete,
-                    contentDescription = "Delete alarm",
+                    contentDescription = stringResource(R.string.cd_delete_alarm),
                     tint = MaterialTheme.colorScheme.error,
                 )
             }

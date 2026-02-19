@@ -53,7 +53,9 @@ fun NavGraph(
             )
         }
         composable(Screen.MusicSelection.route) {
-            com.tungnk123.soundalarm.presentation.music.MusicSelectionScreen()
+            com.tungnk123.soundalarm.presentation.music.MusicSelectionScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
         composable(Screen.Playlist.route) {
             com.tungnk123.soundalarm.presentation.playlist.PlaylistScreen(

@@ -13,7 +13,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.tungnk123.soundalarm.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,10 +25,10 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Settings") },
+                title = { Text(stringResource(R.string.title_settings)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.cd_back))
                     }
                 },
             )
@@ -38,7 +40,7 @@ fun SettingsScreen(
                 .padding(innerPadding)
                 .padding(16.dp),
         ) {
-            Text("Settings screen - customize your alarm preferences here.")
+            Text(stringResource(R.string.message_settings_description))
         }
     }
 }
