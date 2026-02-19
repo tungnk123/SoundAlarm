@@ -3,6 +3,7 @@ package com.tungnk123.soundalarm.presentation.music
 import android.content.Context
 import android.net.Uri
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -21,6 +22,7 @@ class MusicAudioPlayer @Inject constructor(
         exoPlayer?.apply {
             val mediaItem = MediaItem.fromUri(uri)
             setMediaItem(mediaItem)
+            repeatMode = Player.REPEAT_MODE_ONE
             prepare()
             play()
         }
