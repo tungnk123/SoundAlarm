@@ -32,10 +32,15 @@
     <!-- Alarm Detail Screen -->
     <string name="label_alarm_label">Label</string>
     <string name="label_repeat">Repeat</string>
+    <string name="label_one_time">One time</string>
     <string name="label_vibrate">Vibrate</string>
     <string name="label_music">Music</string>
     <string name="label_default">Default</string>
     <string name="label_default_all_days">Default (all days)</string>
+    <string name="label_tap_to_change_time">Tap to change time</string>
+    <string name="label_select_time">Select time</string>
+    <string name="label_delete_after_alarm">Delete after alarm fires</string>
+    <string name="label_delete_after_alarm_desc">Remove this alarm automatically after it rings</string>
     <string name="message_select_track_for">Select track for %s</string>
     <string name="message_no_tracks_in_playlist">No tracks in playlist. Add music from the home screen.</string>
     <string name="message_music_selection_help">Choose which track plays for each day. \"Default\" applies when no specific day track is set.</string>
@@ -60,4 +65,16 @@
 
     <!-- Playlist reorder -->
     <string name="cd_drag_to_reorder">Drag to reorder</string>
+    <string name="cd_edit_time">Edit time</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="button_ok">OK</string>
+
+    <!-- Snooze banner -->
+    <string name="snooze_banner_title">Alarm Snoozed</string>
+    <string name="snooze_banner_subtitle">%1$s – rings at %2$s</string>
+    <string name="snooze_banner_cancel">Cancel</string>
+
+    <!-- Snooze notification -->
+    <string name="notification_snooze_title">Alarm Snoozed</string>
+    <string name="notification_snooze_text">%1$s – rings at %2$s</string>
 </resources>

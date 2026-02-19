@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalTime
 import javax.inject.Inject
 
 data class TrackSelection(
@@ -26,11 +27,12 @@ data class TrackSelection(
 )
 
 data class AlarmDetailUiState(
-    val hour: Int = 8,
-    val minute: Int = 0,
+    val hour: Int = LocalTime.now().hour,
+    val minute: Int = LocalTime.now().minute,
     val label: String = "",
     val repeatDays: Set<DayOfWeek> = emptySet(),
     val isVibrate: Boolean = true,
+    val deleteAfterFired: Boolean = false,
     val soundUri: String? = null,
     val isEditing: Boolean = false,
     val isSaved: Boolean = false,
@@ -79,6 +81,7 @@ class AlarmDetailViewModel @Inject constructor(
                         label = alarm.label,
                         repeatDays = alarm.repeatDays,
                         isVibrate = alarm.isVibrate,
+                        deleteAfterFired = alarm.deleteAfterFired,
                         soundUri = alarm.soundUri,
                         isEditing = true,
                     )
@@ -114,12 +117,24 @@ class AlarmDetailViewModel @Inject constructor(
         _uiState.update { state ->
             val newDays = state.repeatDays.toMutableSet()
             if (day in newDays) newDays.remove(day) else newDays.add(day)
-            state.copy(repeatDays = newDays)
+            // When repeat days are set, disable deleteAfterFired
+            state.copy(
+                repeatDays = newDays,
+                deleteAfterFired = if (newDays.isNotEmpty()) false else state.deleteAfterFired,
+            )
         }
+    }
+
+    fun setOneTime() {
+        _uiState.update { it.copy(repeatDays = emptySet()) }
     }
 
     fun toggleVibrate() {
         _uiState.update { it.copy(isVibrate = !it.isVibrate) }
+    }
+
+    fun toggleDeleteAfterFired() {
+        _uiState.update { it.copy(deleteAfterFired = !it.deleteAfterFired) }
     }
 
     fun showTrackPickerForDay(dayKey: String) {
@@ -160,6 +175,7 @@ class AlarmDetailViewModel @Inject constructor(
                 label = state.label,
                 repeatDays = state.repeatDays,
                 isVibrate = state.isVibrate,
+                deleteAfterFired = state.deleteAfterFired,
                 soundUri = state.soundUri,
             )
             val savedId = saveAlarmUseCase(alarm)

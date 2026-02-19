@@ -57,7 +57,6 @@ fun PlaylistScreen(
     val playlist by viewModel.playlist.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Local list for optimistic drag reorder
     var localPlaylist by remember(playlist) { mutableStateOf(playlist) }
 
     val lazyListState = androidx.compose.foundation.lazy.rememberLazyListState()

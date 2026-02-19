@@ -21,6 +21,7 @@ import com.tungnk123.soundalarm.domain.model.AlarmDayTrack
 import com.tungnk123.soundalarm.domain.repository.AlarmDayTrackRepository
 import com.tungnk123.soundalarm.domain.repository.AlarmRepository
 import com.tungnk123.soundalarm.domain.repository.PlaylistRepository
+import com.tungnk123.soundalarm.domain.snooze.SnoozeManager
 import com.tungnk123.soundalarm.presentation.music.MusicAudioPlayer
 import com.tungnk123.soundalarm.presentation.scheduler.AlarmReceiver
 import com.tungnk123.soundalarm.presentation.trigger.AlarmTriggerActivity
@@ -31,8 +32,11 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 import com.tungnk123.soundalarm.domain.model.DayOfWeek as AppDayOfWeek
 
@@ -51,14 +55,20 @@ class AlarmService : Service() {
     @Inject
     lateinit var audioPlayer: MusicAudioPlayer
 
+    @Inject
+    lateinit var snoozeManager: SnoozeManager
+
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var vibrator: Vibrator? = null
 
     companion object {
         const val CHANNEL_ID = "ALARM_CHANNEL"
+        const val SNOOZE_CHANNEL_ID = "SNOOZE_CHANNEL"
         const val NOTIFICATION_ID = 1
+        const val SNOOZE_NOTIFICATION_ID = 2
         const val ACTION_STOP_ALARM = "STOP_ALARM"
         const val ACTION_SNOOZE_ALARM = "SNOOZE_ALARM"
+        const val ACTION_CANCEL_SNOOZE = "CANCEL_SNOOZE"
         const val ACTION_ALARM_STOPPED = "com.tungnk123.soundalarm.ALARM_STOPPED"
         const val EXTRA_ALARM_ID = "ALARM_ID"
         const val EXTRA_ALARM_LABEL = "ALARM_LABEL"
@@ -66,17 +76,22 @@ class AlarmService : Service() {
         private const val INVALID_ALARM_ID = -1L
         private const val DEFAULT_ALARM_LABEL = "Alarm"
         private const val SNOOZE_DURATION_MS = 10 * 60 * 1000L
-        private const val SNOOZE_REQUEST_CODE_MULTIPLIER = 1000
-        private const val SNOOZE_REQUEST_CODE_OFFSET = 999
+        const val SNOOZE_REQUEST_CODE_MULTIPLIER = 1000
+        const val SNOOZE_REQUEST_CODE_OFFSET = 999
         private const val TRIGGER_REQUEST_CODE = 0
         private const val STOP_REQUEST_CODE = 0
         private const val SNOOZE_REQUEST_CODE = 1
+        private const val CANCEL_SNOOZE_REQUEST_CODE = 2
         private const val NO_ICON = 0
         private const val CHANNEL_NAME = "Alarm Channel"
         private const val CHANNEL_DESCRIPTION = "Channel for Alarm Notifications"
+        private const val SNOOZE_CHANNEL_NAME = "Snoozed Alarms"
+        private const val SNOOZE_CHANNEL_DESCRIPTION = "Shows active snoozed alarms"
         private const val NOTIFICATION_CONTENT_TEXT = "Tap to view alarm"
+
         private const val ACTION_LABEL_SNOOZE = "Snooze"
         private const val ACTION_LABEL_STOP = "Stop"
+        private const val ACTION_LABEL_CANCEL_SNOOZE = "Cancel Snooze"
 
         private val VIBRATION_PATTERN = longArrayOf(0, 500, 500)
     }
@@ -86,6 +101,7 @@ class AlarmService : Service() {
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
+        createSnoozeNotificationChannel()
         vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             (getSystemService(VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
         } else {
@@ -163,7 +179,48 @@ class AlarmService : Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
         val snoozeAtMillis = System.currentTimeMillis() + SNOOZE_DURATION_MS
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, snoozeAtMillis, pendingIntent)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (alarmManager.canScheduleExactAlarms()) {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, snoozeAtMillis, pendingIntent)
+            } else {
+                alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, snoozeAtMillis, pendingIntent)
+            }
+        } else {
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, snoozeAtMillis, pendingIntent)
+        }
+
+        snoozeManager.setSnooze(alarmId, alarmLabel, snoozeAtMillis)
+        showSnoozeNotification(alarmId, alarmLabel, snoozeAtMillis)
+    }
+
+    private fun showSnoozeNotification(alarmId: Long, alarmLabel: String, snoozeUntilMs: Long) {
+        val timeStr = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(snoozeUntilMs))
+
+        val cancelSnoozeIntent = Intent(this, AlarmReceiver::class.java).apply {
+            action = ACTION_CANCEL_SNOOZE
+            putExtra(EXTRA_ALARM_ID, alarmId)
+            putExtra(EXTRA_ALARM_LABEL, alarmLabel)
+        }
+        val cancelSnoozePendingIntent = PendingIntent.getBroadcast(
+            this,
+            CANCEL_SNOOZE_REQUEST_CODE,
+            cancelSnoozeIntent,
+            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+
+        val notification = NotificationCompat.Builder(this, SNOOZE_CHANNEL_ID)
+            .setContentTitle(getString(R.string.notification_snooze_title))
+            .setContentText(getString(R.string.notification_snooze_text, alarmLabel, timeStr))
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setOngoing(true)
+            .addAction(NO_ICON, ACTION_LABEL_CANCEL_SNOOZE, cancelSnoozePendingIntent)
+            .build()
+
+        val notificationManager = getSystemService(NotificationManager::class.java)
+        notificationManager.notify(SNOOZE_NOTIFICATION_ID, notification)
     }
 
     private suspend fun playTrackForAlarm(alarmId: Long) {
@@ -234,6 +291,19 @@ class AlarmService : Service() {
             NotificationManager.IMPORTANCE_HIGH,
         ).apply {
             description = CHANNEL_DESCRIPTION
+            setSound(null, null)
+        }
+        val manager = getSystemService(NotificationManager::class.java)
+        manager.createNotificationChannel(channel)
+    }
+
+    private fun createSnoozeNotificationChannel() {
+        val channel = NotificationChannel(
+            SNOOZE_CHANNEL_ID,
+            SNOOZE_CHANNEL_NAME,
+            NotificationManager.IMPORTANCE_DEFAULT,
+        ).apply {
+            description = SNOOZE_CHANNEL_DESCRIPTION
             setSound(null, null)
         }
         val manager = getSystemService(NotificationManager::class.java)

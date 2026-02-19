@@ -9,6 +9,7 @@ data class Alarm(
     val repeatDays: Set<DayOfWeek> = emptySet(),
     val soundUri: String? = null,
     val isVibrate: Boolean = true,
+    val deleteAfterFired: Boolean = false,
 )
 
 enum class DayOfWeek(val shortName: String) {
