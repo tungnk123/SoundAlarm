@@ -76,6 +76,9 @@
     <string name="button_ok">OK</string>
     <string name="button_delete">Delete</string>
     <string name="button_remove">Remove</string>
+    <string name="button_clear">Clear</string>
+    <string name="label_one_time_alarm">One time alarm</string>
+    <string name="label_repeats_days">Repeats: %s</string>
 
     <!-- Delete / Remove confirmation dialogs -->
     <string name="dialog_delete_alarm_title">Delete Alarm</string>
