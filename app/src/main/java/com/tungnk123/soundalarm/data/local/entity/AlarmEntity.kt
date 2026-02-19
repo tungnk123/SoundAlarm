@@ -18,6 +18,8 @@ data class AlarmEntity(
     val isVibrate: Boolean = true,
     val deleteAfterFired: Boolean = false,
     val isRandomMusic: Boolean = false,
+    val volume: Float = 1.0f,
+    val fadeInDuration: Int = 0,
 ) {
     fun toDomain(): Alarm = Alarm(
         id = id,
@@ -33,6 +35,8 @@ data class AlarmEntity(
         isVibrate = isVibrate,
         deleteAfterFired = deleteAfterFired,
         isRandomMusic = isRandomMusic,
+        volume = volume,
+        fadeInDuration = fadeInDuration,
     )
 
     companion object {
@@ -47,6 +51,8 @@ data class AlarmEntity(
             isVibrate = alarm.isVibrate,
             deleteAfterFired = alarm.deleteAfterFired,
             isRandomMusic = alarm.isRandomMusic,
+            volume = alarm.volume,
+            fadeInDuration = alarm.fadeInDuration,
         )
     }
 }

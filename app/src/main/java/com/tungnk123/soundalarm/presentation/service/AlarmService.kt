@@ -11,6 +11,7 @@ import android.content.pm.ServiceInfo
 import android.net.Uri
 import android.os.Build
 import android.os.IBinder
+import android.os.VibrationAttributes
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
@@ -93,7 +94,8 @@ class AlarmService : Service() {
         private const val ACTION_LABEL_STOP = "Stop"
         private const val ACTION_LABEL_CANCEL_SNOOZE = "Cancel Snooze"
 
-        private val VIBRATION_PATTERN = longArrayOf(0, 500, 500)
+        private val VIBRATION_PATTERN = longArrayOf(0, 600, 400)
+        private val VIBRATION_AMPLITUDES = intArrayOf(0, 255, 0)
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -145,16 +147,27 @@ class AlarmService : Service() {
             if (alarm?.isVibrate != false) {
                 withContext(Dispatchers.Main) { startVibration() }
             }
-            playTrackForAlarm(alarmId, alarm?.isRandomMusic == true)
+            playTrackForAlarm(
+                alarmId = alarmId,
+                isRandom = alarm?.isRandomMusic == true,
+                volume = alarm?.volume ?: 1.0f,
+                fadeInDuration = alarm?.fadeInDuration ?: 0,
+            )
         }
 
         return START_STICKY
     }
 
     private fun startVibration() {
-        vibrator?.vibrate(
-            VibrationEffect.createWaveform(VIBRATION_PATTERN, 0),
-        )
+        val effect = VibrationEffect.createWaveform(VIBRATION_PATTERN, VIBRATION_AMPLITUDES, 0)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val attrs = VibrationAttributes.Builder()
+                .setUsage(VibrationAttributes.USAGE_ALARM)
+                .build()
+            vibrator?.vibrate(effect, attrs)
+        } else {
+            vibrator?.vibrate(effect)
+        }
     }
 
     private fun stopAlarmAndNotify() {
@@ -223,7 +236,12 @@ class AlarmService : Service() {
         notificationManager.notify(SNOOZE_NOTIFICATION_ID, notification)
     }
 
-    private suspend fun playTrackForAlarm(alarmId: Long, isRandom: Boolean = false) {
+    private suspend fun playTrackForAlarm(
+        alarmId: Long,
+        isRandom: Boolean = false,
+        volume: Float = 1.0f,
+        fadeInDuration: Int = 0,
+    ) {
         val uriToPlay: Uri? = if (!isRandom && alarmId != INVALID_ALARM_ID) {
             val dayTracks = alarmDayTrackRepository.getTracksForAlarmSync(alarmId)
             val todayName = LocalDate.now().dayOfWeek.toAlarmDay()
@@ -236,7 +254,7 @@ class AlarmService : Service() {
 
         finalUri?.let { uri ->
             withContext(Dispatchers.Main) {
-                audioPlayer.play(uri)
+                audioPlayer.play(uri, volume = volume, fadeInDuration = fadeInDuration)
             }
         }
     }

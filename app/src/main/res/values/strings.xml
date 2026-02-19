@@ -104,4 +104,14 @@
     <!-- Snooze notification -->
     <string name="notification_snooze_title">Alarm Snoozed</string>
     <string name="notification_snooze_text">%1$s – rings at %2$s</string>
+
+    <!-- Sound Settings -->
+    <string name="label_sound_settings">Sound Settings</string>
+    <string name="label_volume">Volume</string>
+    <string name="label_fade_in">Fade In</string>
+    <string name="label_fade_in_desc">Gradually increase volume when alarm starts</string>
+    <string name="label_fade_in_off">Off</string>
+    <string name="label_fade_in_seconds">%ds</string>
+    <string name="label_fade_in_1min">1 min</string>
+    <string name="label_fade_in_2min">2 min</string>
 </resources>

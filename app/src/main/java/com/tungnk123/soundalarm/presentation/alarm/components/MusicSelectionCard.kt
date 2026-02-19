@@ -60,18 +60,21 @@ fun MusicSelectionCard(
                     Icon(
                         Icons.Default.MusicNote,
                         contentDescription = null,
-                        modifier = Modifier.size(18.dp),
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.onTertiaryContainer,
                     )
                 },
                 title = stringResource(R.string.label_music),
                 subtitle = stringResource(R.string.message_music_selection_help),
+                iconContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                titleColor = MaterialTheme.colorScheme.tertiary,
             )
 
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Box(
@@ -97,10 +100,14 @@ fun MusicSelectionCard(
                     )
                 }
                 Spacer(Modifier.width(12.dp))
-                Column(modifier = Modifier.weight(1f)) {
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(3.dp),
+                ) {
                     Text(
                         text = stringResource(R.string.label_random_music),
                         style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium,
                     )
                     Text(
                         text = stringResource(R.string.label_random_music_desc),

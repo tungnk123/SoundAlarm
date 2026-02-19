@@ -3,6 +3,7 @@ package com.tungnk123.soundalarm.presentation.alarm.components
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -28,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.tungnk123.soundalarm.R
 import com.tungnk123.soundalarm.domain.model.DayOfWeek
@@ -53,10 +55,13 @@ fun ScheduleCard(
                     Icon(
                         Icons.Default.Repeat,
                         contentDescription = null,
-                        modifier = Modifier.size(18.dp),
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
                     )
                 },
                 title = stringResource(R.string.label_repeat),
+                iconContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                titleColor = MaterialTheme.colorScheme.secondary,
             )
 
             DaySelector(
@@ -109,7 +114,7 @@ fun ScheduleCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                    .padding(horizontal = 16.dp, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
@@ -122,6 +127,7 @@ fun ScheduleCard(
                 Text(
                     text = stringResource(R.string.label_vibrate),
                     style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
                     modifier = Modifier.weight(1f),
                 )
                 Switch(
@@ -140,7 +146,7 @@ fun ScheduleCard(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                            .padding(horizontal = 16.dp, vertical = 10.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(
@@ -153,10 +159,14 @@ fun ScheduleCard(
                                 MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Spacer(Modifier.width(12.dp))
-                        Column(modifier = Modifier.weight(1f)) {
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(3.dp),
+                        ) {
                             Text(
                                 text = stringResource(R.string.label_delete_after_alarm),
                                 style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Medium,
                             )
                             Text(
                                 text = stringResource(R.string.label_delete_after_alarm_desc),

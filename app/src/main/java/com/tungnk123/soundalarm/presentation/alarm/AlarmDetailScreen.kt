@@ -63,6 +63,7 @@ import com.tungnk123.soundalarm.domain.model.AlarmDayTrack
 import com.tungnk123.soundalarm.domain.model.DayOfWeek
 import com.tungnk123.soundalarm.presentation.alarm.components.MusicSelectionCard
 import com.tungnk123.soundalarm.presentation.alarm.components.ScheduleCard
+import com.tungnk123.soundalarm.presentation.alarm.components.SoundSettingsCard
 import com.tungnk123.soundalarm.presentation.alarm.components.TimePickerCard
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -322,7 +323,7 @@ fun AlarmDetailScreen(
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             TimePickerCard(
                 hour = uiState.hour,
@@ -359,6 +360,13 @@ fun AlarmDetailScreen(
                 onToggleRandomMusic = { viewModel.toggleRandomMusic() },
                 onShowTrackPickerForDay = { viewModel.showTrackPickerForDay(it) },
                 onRemoveTrackForDay = { dayKeyToRemove = it },
+            )
+
+            SoundSettingsCard(
+                volume = uiState.volume,
+                fadeInDuration = uiState.fadeInDuration,
+                onVolumeChange = viewModel::updateVolume,
+                onFadeInDurationChange = viewModel::updateFadeInDuration,
             )
 
             Spacer(Modifier.height(80.dp))
