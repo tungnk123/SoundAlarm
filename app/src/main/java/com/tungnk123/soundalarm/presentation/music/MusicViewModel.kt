@@ -2,6 +2,7 @@ package com.tungnk123.soundalarm.presentation.music
 
 import android.content.Context
 import android.net.Uri
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tungnk123.soundalarm.R
@@ -33,11 +34,14 @@ sealed interface MusicEvent {
 
 @HiltViewModel
 class MusicViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     @ApplicationContext private val context: Context,
     private val repository: MusicRepository,
     private val playlistRepository: PlaylistRepository,
-    private val audioPlayer: MusicAudioPlayer
+    private val audioPlayer: MusicAudioPlayer,
 ) : ViewModel() {
+
+    val playlistGroupId: Long = savedStateHandle["playlistGroupId"] ?: 0L
 
     private val _uiState = MutableStateFlow<MusicUiState>(MusicUiState.Loading)
     val uiState: StateFlow<MusicUiState> = _uiState.asStateFlow()
@@ -48,7 +52,7 @@ class MusicViewModel @Inject constructor(
     fun addToPlaylist(track: MusicTrack) {
         viewModelScope.launch {
             try {
-                playlistRepository.addTrack(track)
+                playlistRepository.addTrack(track, playlistGroupId)
                 _events.emit(MusicEvent.AddedToPlaylist(context.getString(R.string.message_track_added, track.title)))
             } catch (e: Exception) {
                 _events.emit(MusicEvent.AddError(context.getString(R.string.message_add_error)))

@@ -9,6 +9,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.tungnk123.soundalarm.presentation.alarm.AlarmDetailScreen
 import com.tungnk123.soundalarm.presentation.home.HomeScreen
+import com.tungnk123.soundalarm.presentation.music.MusicSelectionScreen
+import com.tungnk123.soundalarm.presentation.playlist.PlaylistGroupsScreen
+import com.tungnk123.soundalarm.presentation.playlist.PlaylistScreen
 import com.tungnk123.soundalarm.presentation.settings.SettingsScreen
 
 @Composable
@@ -30,7 +33,7 @@ fun NavGraph(
                     navController.navigate(Screen.Settings.route)
                 },
                 onNavigateToMusicSelection = {
-                    navController.navigate(Screen.Playlist.route)
+                    navController.navigate(Screen.PlaylistGroups.route)
                 },
                 onNavigateToNewAlarm = {
                     navController.navigate(Screen.AlarmDetail.createRoute(0L))
@@ -45,6 +48,7 @@ fun NavGraph(
         ) {
             AlarmDetailScreen(
                 onNavigateBack = { navController.popBackStack() },
+                onNavigateToPlaylist = { navController.navigate(Screen.PlaylistGroups.route) },
             )
         }
         composable(Screen.Settings.route) {
@@ -52,15 +56,35 @@ fun NavGraph(
                 onNavigateBack = { navController.popBackStack() },
             )
         }
-        composable(Screen.MusicSelection.route) {
-            com.tungnk123.soundalarm.presentation.music.MusicSelectionScreen(
-                onNavigateBack = { navController.popBackStack() }
+        composable(
+            route = Screen.MusicSelection.route,
+            arguments = listOf(
+                navArgument("playlistGroupId") { type = NavType.LongType },
+            ),
+        ) {
+            MusicSelectionScreen(
+                onNavigateBack = { navController.popBackStack() },
             )
         }
-        composable(Screen.Playlist.route) {
-            com.tungnk123.soundalarm.presentation.playlist.PlaylistScreen(
+        composable(Screen.PlaylistGroups.route) {
+            PlaylistGroupsScreen(
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToAddMusic = { navController.navigate(Screen.MusicSelection.route) }
+                onNavigateToPlaylistDetail = { playlistGroupId ->
+                    navController.navigate(Screen.PlaylistDetail.createRoute(playlistGroupId))
+                },
+            )
+        }
+        composable(
+            route = Screen.PlaylistDetail.route,
+            arguments = listOf(
+                navArgument("playlistGroupId") { type = NavType.LongType },
+            ),
+        ) {
+            PlaylistScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToAddMusic = { playlistGroupId ->
+                    navController.navigate(Screen.MusicSelection.createRoute(playlistGroupId))
+                },
             )
         }
     }

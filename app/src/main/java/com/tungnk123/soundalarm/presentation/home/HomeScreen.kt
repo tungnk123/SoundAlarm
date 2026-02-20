@@ -45,9 +45,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tungnk123.soundalarm.R
 import com.tungnk123.soundalarm.presentation.home.components.AlarmItem
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import com.tungnk123.soundalarm.presentation.home.components.EmptyStateTutorial
+import com.tungnk123.soundalarm.presentation.home.components.SnoozeBannerCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,40 +93,30 @@ fun HomeScreen(
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
                 uiState.alarms.isEmpty() && uiState.snoozeState == null -> {
-                    Column(
-                        modifier = Modifier.align(Alignment.Center),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        Text(
-                            text = stringResource(R.string.message_no_alarms),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        Text(
-                            text = stringResource(R.string.message_tap_add_alarm),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
+                    EmptyStateTutorial(
+                        onNavigateToMusicSelection = onNavigateToMusicSelection,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(32.dp),
+                    )
                 }
                 else -> {
-                    LazyColumn(
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        uiState.snoozeState?.let { snooze ->
-                            item {
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .padding(top = 16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            uiState.snoozeState?.let { snooze ->
                                 SnoozeBannerCard(
                                     alarmLabel = snooze.alarmLabel,
                                     snoozeUntilMs = snooze.snoozeUntilMs,
                                     onCancelSnooze = { viewModel.cancelSnooze() },
                                 )
                             }
-                        }
-
-                        uiState.nextAlarmText?.let { text ->
-                            item {
+                            uiState.nextAlarmText?.let { text ->
                                 Card(
                                     modifier = Modifier.fillMaxWidth(),
                                     colors = CardDefaults.cardColors(
@@ -152,73 +141,23 @@ fun HomeScreen(
                                 }
                             }
                         }
-                        items(uiState.alarms, key = { it.id }) { alarm ->
-                            AlarmItem(
-                                alarm = alarm,
-                                onToggle = { viewModel.toggleAlarm(alarm.id, it) },
-                                onClick = { onNavigateToAlarmDetail(alarm.id) },
-                                onDelete = { viewModel.deleteAlarm(alarm) },
-                            )
+
+                        LazyColumn(
+                            contentPadding = PaddingValues(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.weight(1f),
+                        ) {
+                            items(uiState.alarms, key = { it.id }) { alarm ->
+                                AlarmItem(
+                                    alarm = alarm,
+                                    onToggle = { viewModel.toggleAlarm(alarm.id, it) },
+                                    onClick = { onNavigateToAlarmDetail(alarm.id) },
+                                    onDelete = { viewModel.deleteAlarm(alarm) },
+                                )
+                            }
                         }
                     }
                 }
-            }
-        }
-    }
-}
-
-@Composable
-private fun SnoozeBannerCard(
-    alarmLabel: String,
-    snoozeUntilMs: Long,
-    onCancelSnooze: () -> Unit,
-) {
-    val timeStr = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(snoozeUntilMs))
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-        ),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            Icon(
-                imageVector = Icons.Default.Snooze,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onTertiaryContainer,
-                modifier = Modifier.size(28.dp),
-            )
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = stringResource(R.string.snooze_banner_title),
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer,
-                )
-                Text(
-                    text = stringResource(R.string.snooze_banner_subtitle, alarmLabel, timeStr),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer,
-                )
-            }
-            OutlinedButton(
-                onClick = onCancelSnooze,
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                ),
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Cancel,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(text = stringResource(R.string.snooze_banner_cancel))
             }
         }
     }

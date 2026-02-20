@@ -17,6 +17,15 @@ interface PlaylistDao {
     @Query("SELECT * FROM playlist ORDER BY sortOrder ASC")
     suspend fun getAllTracksList(): List<PlaylistEntity>
 
+    @Query("SELECT * FROM playlist WHERE playlistGroupId = :playlistGroupId ORDER BY sortOrder ASC")
+    fun getTracksByPlaylistGroup(playlistGroupId: Long): Flow<List<PlaylistEntity>>
+
+    @Query("SELECT * FROM playlist WHERE playlistGroupId = :playlistGroupId ORDER BY sortOrder ASC")
+    suspend fun getTracksByPlaylistGroupList(playlistGroupId: Long): List<PlaylistEntity>
+
+    @Query("SELECT * FROM playlist WHERE isFavorite = 1 ORDER BY sortOrder ASC")
+    fun getFavoriteTracks(): Flow<List<PlaylistEntity>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTrack(track: PlaylistEntity)
 
@@ -25,4 +34,7 @@ interface PlaylistDao {
 
     @Update
     suspend fun updateTracks(tracks: List<PlaylistEntity>)
+
+    @Query("UPDATE playlist SET isFavorite = :isFavorite WHERE id = :id")
+    suspend fun setFavorite(id: Long, isFavorite: Boolean)
 }

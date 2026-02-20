@@ -14,22 +14,28 @@ data class PlaylistEntity(
     val duration: Long,
     val contentUri: String,
     val sortOrder: Int = 0,
+    val playlistGroupId: Long = 0,
+    val isFavorite: Boolean = false,
 ) {
     fun toDomain(): MusicTrack = MusicTrack(
         id = id,
         title = title,
         artist = artist,
         duration = duration,
-        contentUri = Uri.parse(contentUri)
+        contentUri = Uri.parse(contentUri),
+        isFavorite = isFavorite,
+        playlistGroupId = playlistGroupId,
     )
 
     companion object {
-        fun fromDomain(track: MusicTrack, sortOrder: Int = 0): PlaylistEntity = PlaylistEntity(
+        fun fromDomain(track: MusicTrack, sortOrder: Int = 0, playlistGroupId: Long = 0): PlaylistEntity = PlaylistEntity(
             title = track.title,
             artist = track.artist,
             duration = track.duration,
             contentUri = track.contentUri.toString(),
             sortOrder = sortOrder,
+            playlistGroupId = playlistGroupId,
+            isFavorite = track.isFavorite,
         )
     }
 }

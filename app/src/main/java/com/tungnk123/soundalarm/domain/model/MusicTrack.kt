@@ -7,5 +7,7 @@ data class MusicTrack(
     val title: String,
     val artist: String,
     val duration: Long,
-    val contentUri: Uri
+    val contentUri: Uri,
+    val isFavorite: Boolean = false,
+    val playlistGroupId: Long = 0,
 )

@@ -17,6 +17,10 @@ data class AlarmEntity(
     val soundUri: String? = null,
     val isVibrate: Boolean = true,
     val deleteAfterFired: Boolean = false,
+    val isRandomMusic: Boolean = false,
+    val volume: Float = 1.0f,
+    val fadeInDuration: Int = 0,
+    val playlistGroupId: Long = 0,
 ) {
     fun toDomain(): Alarm = Alarm(
         id = id,
@@ -31,6 +35,10 @@ data class AlarmEntity(
         soundUri = soundUri,
         isVibrate = isVibrate,
         deleteAfterFired = deleteAfterFired,
+        isRandomMusic = isRandomMusic,
+        volume = volume,
+        fadeInDuration = fadeInDuration,
+        playlistGroupId = playlistGroupId,
     )
 
     companion object {
@@ -44,6 +52,10 @@ data class AlarmEntity(
             soundUri = alarm.soundUri,
             isVibrate = alarm.isVibrate,
             deleteAfterFired = alarm.deleteAfterFired,
+            isRandomMusic = alarm.isRandomMusic,
+            volume = alarm.volume,
+            fadeInDuration = alarm.fadeInDuration,
+            playlistGroupId = alarm.playlistGroupId,
         )
     }
 }

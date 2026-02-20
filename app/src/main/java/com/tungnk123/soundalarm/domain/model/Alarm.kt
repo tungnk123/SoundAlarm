@@ -10,6 +10,10 @@ data class Alarm(
     val soundUri: String? = null,
     val isVibrate: Boolean = true,
     val deleteAfterFired: Boolean = false,
+    val isRandomMusic: Boolean = false,
+    val volume: Float = 1.0f,
+    val fadeInDuration: Int = 0,
+    val playlistGroupId: Long = 0,
 )
 
 enum class DayOfWeek(val shortName: String) {
