@@ -55,6 +55,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="com.tungnk123.soundalarm.PRE_ALARM_NOTIFICATION" />
             </intent-filter>
         </receiver>
 

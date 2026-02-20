@@ -22,6 +22,7 @@ import com.tungnk123.soundalarm.domain.model.AlarmDayTrack
 import com.tungnk123.soundalarm.domain.repository.AlarmDayTrackRepository
 import com.tungnk123.soundalarm.domain.repository.AlarmRepository
 import com.tungnk123.soundalarm.domain.repository.PlaylistRepository
+import com.tungnk123.soundalarm.domain.repository.SettingsRepository
 import com.tungnk123.soundalarm.domain.snooze.SnoozeManager
 import com.tungnk123.soundalarm.presentation.music.MusicAudioPlayer
 import com.tungnk123.soundalarm.presentation.scheduler.AlarmReceiver
@@ -29,8 +30,10 @@ import com.tungnk123.soundalarm.presentation.trigger.AlarmTriggerActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -59,8 +62,12 @@ class AlarmService : Service() {
     @Inject
     lateinit var snoozeManager: SnoozeManager
 
+    @Inject
+    lateinit var settingsRepository: SettingsRepository
+
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var vibrator: Vibrator? = null
+    private var autoStopJob: Job? = null
 
     companion object {
         const val CHANNEL_ID = "ALARM_CHANNEL"
@@ -115,6 +122,9 @@ class AlarmService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             ACTION_STOP_ALARM -> {
+                val alarmId = intent.getLongExtra(EXTRA_ALARM_ID, INVALID_ALARM_ID)
+                snoozeManager.resetSnoozeCount(alarmId)
+                autoStopJob?.cancel()
                 stopAlarmAndNotify()
                 stopSelf()
                 return START_NOT_STICKY
@@ -122,7 +132,13 @@ class AlarmService : Service() {
             ACTION_SNOOZE_ALARM -> {
                 val alarmId = intent.getLongExtra(EXTRA_ALARM_ID, INVALID_ALARM_ID)
                 val alarmLabel = intent.getStringExtra(EXTRA_ALARM_LABEL) ?: DEFAULT_ALARM_LABEL
-                scheduleSnooze(alarmId, alarmLabel)
+                val settings = settingsRepository.getSettings()
+                val snoozeCount = snoozeManager.getSnoozeCount(alarmId)
+                val maxSnooze = settings.snoozeCount
+                if (maxSnooze == 0 || snoozeCount < maxSnooze) {
+                    scheduleSnooze(alarmId, alarmLabel)
+                }
+                autoStopJob?.cancel()
                 stopAlarmAndNotify()
                 stopSelf()
                 return START_NOT_STICKY
@@ -140,6 +156,17 @@ class AlarmService : Service() {
             )
         } else {
             startForeground(NOTIFICATION_ID, createNotification(alarmId, alarmLabel))
+        }
+
+        val settings = settingsRepository.getSettings()
+        val durationMs = settings.alarmDuration * 60 * 1000L
+        autoStopJob = serviceScope.launch {
+            delay(durationMs)
+            withContext(Dispatchers.Main) {
+                snoozeManager.resetSnoozeCount(alarmId)
+                stopAlarmAndNotify()
+                stopSelf()
+            }
         }
 
         serviceScope.launch {
@@ -279,6 +306,7 @@ class AlarmService : Service() {
 
         val stopIntent = Intent(this, AlarmService::class.java).apply {
             action = ACTION_STOP_ALARM
+            putExtra(EXTRA_ALARM_ID, alarmId)
         }
         val stopPendingIntent = PendingIntent.getService(
             this, STOP_REQUEST_CODE, stopIntent,
@@ -337,6 +365,7 @@ class AlarmService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        autoStopJob?.cancel()
         serviceScope.cancel()
     }
 }

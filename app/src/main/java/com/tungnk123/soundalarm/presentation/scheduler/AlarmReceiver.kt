@@ -1,12 +1,15 @@
 package com.tungnk123.soundalarm.presentation.scheduler
 
 import android.app.AlarmManager
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import androidx.core.app.NotificationCompat
+import com.tungnk123.soundalarm.R
 import com.tungnk123.soundalarm.domain.repository.AlarmRepository
 import com.tungnk123.soundalarm.domain.scheduler.AlarmScheduler
 import com.tungnk123.soundalarm.domain.snooze.SnoozeManager
@@ -34,6 +37,7 @@ class AlarmReceiver : BroadcastReceiver() {
         when (intent.action) {
             Intent.ACTION_BOOT_COMPLETED -> rescheduleAllEnabledAlarms()
             AlarmService.ACTION_CANCEL_SNOOZE -> cancelSnooze(context, intent)
+            ACTION_PRE_ALARM_NOTIFICATION -> showPreAlarmNotification(context, intent)
             else -> handleAlarmFired(context, intent)
         }
     }
@@ -75,22 +79,61 @@ class AlarmReceiver : BroadcastReceiver() {
         notificationManager.cancel(AlarmService.SNOOZE_NOTIFICATION_ID)
 
         snoozeManager.clearSnooze()
+        snoozeManager.resetSnoozeCount(alarmId)
+    }
+
+    private fun showPreAlarmNotification(context: Context, intent: Intent) {
+        val alarmLabel = intent.getStringExtra(AlarmService.EXTRA_ALARM_LABEL) ?: "Alarm"
+        val minutesBefore = intent.getIntExtra(EXTRA_MINUTES_BEFORE, 10)
+
+        val notificationManager = context.getSystemService(NotificationManager::class.java)
+        ensurePreAlarmChannel(notificationManager)
+
+        val notification = NotificationCompat.Builder(context, PRE_ALARM_CHANNEL_ID)
+            .setContentTitle(context.getString(R.string.notification_pre_alarm_title))
+            .setContentText(context.getString(R.string.notification_pre_alarm_text, alarmLabel, minutesBefore))
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setAutoCancel(true)
+            .build()
+
+        notificationManager.notify(PRE_ALARM_NOTIFICATION_ID, notification)
+    }
+
+    private fun ensurePreAlarmChannel(notificationManager: NotificationManager) {
+        val channel = NotificationChannel(
+            PRE_ALARM_CHANNEL_ID,
+            "Pre-Alarm Reminders",
+            NotificationManager.IMPORTANCE_HIGH,
+        ).apply {
+            description = "Notifications shown before an alarm rings"
+        }
+        notificationManager.createNotificationChannel(channel)
     }
 
     private fun handleAlarmFired(context: Context, intent: Intent) {
-        val alarmId = intent.getLongExtra("ALARM_ID", -1L)
-        val alarmLabel = intent.getStringExtra("ALARM_LABEL") ?: "Alarm"
+        val alarmId = intent.getLongExtra(AlarmService.EXTRA_ALARM_ID, -1L)
+        val alarmLabel = intent.getStringExtra(AlarmService.EXTRA_ALARM_LABEL) ?: "Alarm"
 
         if (alarmId == -1L) return
 
-        // Clear any active snooze state when the alarm fires
+        // If there is no active snooze, this is a fresh alarm fire — reset the snooze count
+        // so the configured limit applies cleanly for this alarm session.
+        val isFromSnooze = snoozeManager.snoozeState.value != null
         snoozeManager.clearSnooze()
+        if (!isFromSnooze) {
+            snoozeManager.resetSnoozeCount(alarmId)
+        }
+
         val notificationManager = context.getSystemService(NotificationManager::class.java)
         notificationManager.cancel(AlarmService.SNOOZE_NOTIFICATION_ID)
+        notificationManager.cancel(PRE_ALARM_NOTIFICATION_ID)
 
         val serviceIntent = Intent(context, AlarmService::class.java).apply {
-            putExtra("ALARM_ID", alarmId)
-            putExtra("ALARM_LABEL", alarmLabel)
+            putExtra(AlarmService.EXTRA_ALARM_ID, alarmId)
+            putExtra(AlarmService.EXTRA_ALARM_LABEL, alarmLabel)
         }
         context.startForegroundService(serviceIntent)
         val pendingResult = goAsync()
@@ -108,5 +151,12 @@ class AlarmReceiver : BroadcastReceiver() {
                 pendingResult.finish()
             }
         }
+    }
+
+    companion object {
+        const val ACTION_PRE_ALARM_NOTIFICATION = "com.tungnk123.soundalarm.PRE_ALARM_NOTIFICATION"
+        const val EXTRA_MINUTES_BEFORE = "MINUTES_BEFORE"
+        const val PRE_ALARM_CHANNEL_ID = "PRE_ALARM_CHANNEL"
+        const val PRE_ALARM_NOTIFICATION_ID = 3
     }
 }
