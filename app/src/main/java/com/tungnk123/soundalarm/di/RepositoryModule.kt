@@ -5,11 +5,13 @@ import com.tungnk123.soundalarm.data.repository.AlarmRepositoryImpl
 import com.tungnk123.soundalarm.data.repository.LocalMusicRepositoryImpl
 import com.tungnk123.soundalarm.data.repository.PlaylistGroupRepositoryImpl
 import com.tungnk123.soundalarm.data.repository.PlaylistRepositoryImpl
+import com.tungnk123.soundalarm.data.repository.SettingsRepositoryImpl
 import com.tungnk123.soundalarm.domain.repository.AlarmDayTrackRepository
 import com.tungnk123.soundalarm.domain.repository.AlarmRepository
 import com.tungnk123.soundalarm.domain.repository.MusicRepository
 import com.tungnk123.soundalarm.domain.repository.PlaylistGroupRepository
 import com.tungnk123.soundalarm.domain.repository.PlaylistRepository
+import com.tungnk123.soundalarm.domain.repository.SettingsRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -43,4 +45,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindPlaylistGroupRepository(impl: PlaylistGroupRepositoryImpl): PlaylistGroupRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSettingsRepository(impl: SettingsRepositoryImpl): SettingsRepository
 }

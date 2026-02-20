@@ -76,6 +76,44 @@
 
     <!-- Settings Screen -->
     <string name="message_settings_description">Settings screen - customize your alarm preferences here.</string>
+    <string name="settings_section_snooze">Snooze</string>
+    <string name="settings_section_notification">Notification</string>
+    <string name="settings_section_power">Power</string>
+
+    <string name="settings_snooze_count">Snooze Count</string>
+    <string name="settings_snooze_count_desc">Maximum number of times you can snooze before the alarm stops</string>
+    <string name="settings_unlimited">Unlimited</string>
+
+    <string name="settings_alarm_duration">Ring Duration</string>
+    <string name="settings_alarm_duration_desc">Automatically stop ringing after this duration</string>
+    <string name="settings_minutes">%d min</string>
+
+    <string name="settings_pre_alarm_notification">Pre-Alarm Notification</string>
+    <string name="settings_pre_alarm_notification_desc">Show a reminder notification before the alarm rings</string>
+    <string name="settings_pre_alarm_notification_time">Notification Lead Time</string>
+    <string name="settings_pre_alarm_notification_time_desc">How many minutes before the alarm to show the notification</string>
+
+    <string name="settings_alarm_when_power_off">Alarm When Screen Off</string>
+    <string name="settings_alarm_when_power_off_desc">Use system alarm mode to ring even when the screen is off</string>
+    <string name="settings_alarm_when_power_off_note">This feature uses the system\'s setAlarmClock(), showing an alarm icon on the status bar. The ability to ring when the device is fully off depends on the manufacturer.</string>
+
+    <!-- Sound settings -->
+    <string name="settings_section_sound">Default Sound</string>
+    <string name="settings_default_volume">Default Volume</string>
+    <string name="settings_default_volume_desc">Applied to new alarms when created</string>
+    <string name="settings_default_fade_in">Default Fade In</string>
+    <string name="settings_default_fade_in_desc">Gradually increase volume when alarm starts</string>
+    <string name="settings_default_fade_out">Default Fade Out</string>
+    <string name="settings_default_fade_out_desc">Gradually decrease volume before alarm ends</string>
+    <string name="settings_fade_off">Off</string>
+    <string name="settings_seconds">%ds</string>
+    <string name="settings_default_playlist">Default Playlist</string>
+    <string name="settings_default_playlist_desc">Pre-select this playlist for new alarms</string>
+    <string name="settings_no_playlist">None</string>
+
+    <!-- Pre-alarm notification -->
+    <string name="notification_pre_alarm_title">Alarm Ringing Soon</string>
+    <string name="notification_pre_alarm_text">%1$s – rings in %2$d minute(s)</string>
 
     <!-- Playlist reorder -->
     <string name="cd_drag_to_reorder">Drag to reorder</string>

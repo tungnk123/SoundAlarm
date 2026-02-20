@@ -24,18 +24,34 @@ class SnoozeManager @Inject constructor(
     val snoozeState: StateFlow<SnoozeState?> = _snoozeState
 
     fun setSnooze(alarmId: Long, alarmLabel: String, snoozeUntilMs: Long) {
+        val newCount = getSnoozeCount(alarmId) + 1
         prefs.edit {
             putBoolean("active", true)
             putLong("alarm_id", alarmId)
             putString("alarm_label", alarmLabel)
             putLong("snooze_until_ms", snoozeUntilMs)
+            putInt("snooze_count_$alarmId", newCount)
         }
         _snoozeState.value = SnoozeState(alarmId, alarmLabel, snoozeUntilMs)
     }
 
+    fun getSnoozeCount(alarmId: Long): Int =
+        prefs.getInt("snooze_count_$alarmId", 0)
+
     fun clearSnooze() {
-        prefs.edit { clear() }
+        prefs.edit {
+            remove("active")
+            remove("alarm_id")
+            remove("alarm_label")
+            remove("snooze_until_ms")
+        }
         _snoozeState.value = null
+    }
+
+    fun resetSnoozeCount(alarmId: Long) {
+        if (alarmId != -1L) {
+            prefs.edit { remove("snooze_count_$alarmId") }
+        }
     }
 
     private fun loadFromPrefs(): SnoozeState? {
