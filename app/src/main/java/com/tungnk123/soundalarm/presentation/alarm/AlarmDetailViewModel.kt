@@ -1,10 +1,10 @@
 package com.tungnk123.soundalarm.presentation.alarm
 
+import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tungnk123.soundalarm.domain.model.Alarm
-import com.tungnk123.soundalarm.domain.model.AlarmDayTrack
 import com.tungnk123.soundalarm.domain.model.DayOfWeek
 import com.tungnk123.soundalarm.domain.model.MusicTrack
 import com.tungnk123.soundalarm.domain.model.PlaylistGroup
@@ -14,7 +14,11 @@ import com.tungnk123.soundalarm.domain.repository.AlarmRepository
 import com.tungnk123.soundalarm.domain.repository.PlaylistGroupRepository
 import com.tungnk123.soundalarm.domain.repository.PlaylistRepository
 import com.tungnk123.soundalarm.domain.usecase.SaveAlarmUseCase
+import com.tungnk123.soundalarm.presentation.music.MusicAudioPlayer
+import com.tungnk123.soundalarm.util.AppConstants.DELAY_PREVIEW_MUSIC
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -51,9 +55,11 @@ class AlarmDetailViewModel @Inject constructor(
     private val playlistRepository: PlaylistRepository,
     private val playlistGroupRepository: PlaylistGroupRepository,
     private val alarmDayTrackRepository: AlarmDayTrackRepository,
+    private val musicAudioPlayer: MusicAudioPlayer,
 ) : ViewModel() {
 
     private val alarmId: Long = savedStateHandle["alarmId"] ?: 0L
+    private var previewJob: Job? = null
 
     private val _uiState = MutableStateFlow(AlarmDetailUiState())
     val uiState: StateFlow<AlarmDetailUiState> = _uiState.asStateFlow()
@@ -158,6 +164,23 @@ class AlarmDetailViewModel @Inject constructor(
 
     fun updateVolume(volume: Float) {
         _uiState.update { it.copy(volume = volume.coerceIn(0f, 1f)) }
+    }
+
+    fun previewVolume(volume: Float) {
+        val state = _uiState.value
+        val uri = state.soundUri?.toUri() ?: state.playlist.firstOrNull()?.contentUri ?: return
+        previewJob?.cancel()
+        musicAudioPlayer.play(uri = uri, volume = volume, fadeInDuration = 0)
+        previewJob = viewModelScope.launch {
+            delay(DELAY_PREVIEW_MUSIC)
+            musicAudioPlayer.stop()
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        previewJob?.cancel()
+        musicAudioPlayer.stop()
     }
 
     fun updateFadeInDuration(seconds: Int) {

@@ -454,6 +454,7 @@ fun AlarmDetailScreen(
                 fadeInDuration = uiState.fadeInDuration,
                 onVolumeChange = viewModel::updateVolume,
                 onFadeInDurationChange = viewModel::updateFadeInDuration,
+                onVolumePreview = viewModel::previewVolume,
             )
 
             Spacer(Modifier.height(80.dp))

@@ -39,6 +39,7 @@ fun SoundSettingsCard(
     fadeInDuration: Int,
     onVolumeChange: (Float) -> Unit,
     onFadeInDurationChange: (Int) -> Unit,
+    onVolumePreview: (Float) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ElevatedCard(
@@ -89,6 +90,7 @@ fun SoundSettingsCard(
                 Slider(
                     value = volume,
                     onValueChange = onVolumeChange,
+                    onValueChangeFinished = { onVolumePreview(volume) },
                     valueRange = 0f..1f,
                     modifier = Modifier.fillMaxWidth(),
                 )
