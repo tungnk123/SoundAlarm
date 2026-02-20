@@ -19,10 +19,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.PlaylistAdd
+import androidx.compose.material.icons.filled.PlaylistPlay
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -76,6 +77,7 @@ fun AlarmDetailScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showTimePicker by remember { mutableStateOf(false) }
     var dayKeyToRemove by remember { mutableStateOf<String?>(null) }
+    var showPlaylistGroupPicker by remember { mutableStateOf(false) }
 
     dayKeyToRemove?.let { dayKey ->
         AlertDialog(
@@ -188,7 +190,7 @@ fun AlarmDetailScreen(
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
                         Icon(
-                            imageVector = Icons.Default.PlaylistAdd,
+                            imageVector = Icons.AutoMirrored.Filled.PlaylistAdd,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSecondaryContainer,
                             modifier = Modifier.size(28.dp),
@@ -280,6 +282,88 @@ fun AlarmDetailScreen(
         }
     }
 
+    val playlistGroupSheetState = rememberModalBottomSheetState()
+    if (showPlaylistGroupPicker) {
+        ModalBottomSheet(
+            onDismissRequest = { showPlaylistGroupPicker = false },
+            sheetState = playlistGroupSheetState,
+        ) {
+            Text(
+                text = stringResource(R.string.label_select_playlist),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
+            )
+            HorizontalDivider()
+            PlaylistGroupPickerRow(
+                name = stringResource(R.string.label_all_tracks),
+                isSelected = uiState.playlistGroupId == 0L,
+                onClick = {
+                    viewModel.updatePlaylistGroup(0L)
+                    showPlaylistGroupPicker = false
+                },
+            )
+            if (uiState.availablePlaylistGroups.isNotEmpty()) {
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                uiState.availablePlaylistGroups.forEach { group ->
+                    PlaylistGroupPickerRow(
+                        name = group.name,
+                        isSelected = uiState.playlistGroupId == group.id,
+                        onClick = {
+                            viewModel.updatePlaylistGroup(group.id)
+                            showPlaylistGroupPicker = false
+                        },
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                }
+            }
+            if (uiState.availablePlaylistGroups.isEmpty()) {
+                Card(
+                    onClick = {
+                        showPlaylistGroupPicker = false
+                        onNavigateToPlaylist()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    ),
+                    shape = MaterialTheme.shapes.large,
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp, vertical = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PlaylistPlay,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                            modifier = Modifier.size(28.dp),
+                        )
+                        Column {
+                            Text(
+                                text = stringResource(R.string.label_go_to_playlist),
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                            )
+                            Text(
+                                text = stringResource(R.string.message_no_tracks_go_to_playlist),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f),
+                            )
+                        }
+                    }
+                }
+            }
+            Spacer(Modifier.height(32.dp))
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -357,9 +441,12 @@ fun AlarmDetailScreen(
                 isRandomMusic = uiState.isRandomMusic,
                 dayTracks = uiState.dayTracks,
                 repeatDays = uiState.repeatDays,
+                playlistGroupId = uiState.playlistGroupId,
+                availablePlaylists = uiState.availablePlaylistGroups,
                 onToggleRandomMusic = { viewModel.toggleRandomMusic() },
                 onShowTrackPickerForDay = { viewModel.showTrackPickerForDay(it) },
                 onRemoveTrackForDay = { dayKeyToRemove = it },
+                onShowPlaylistGroupPicker = { showPlaylistGroupPicker = true },
             )
 
             SoundSettingsCard(
@@ -370,6 +457,39 @@ fun AlarmDetailScreen(
             )
 
             Spacer(Modifier.height(80.dp))
+        }
+    }
+}
+
+@Composable
+private fun PlaylistGroupPickerRow(
+    name: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Text(
+            text = name,
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+            color = if (isSelected) MaterialTheme.colorScheme.primary
+            else MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.weight(1f),
+        )
+        if (isSelected) {
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(18.dp),
+            )
         }
     }
 }

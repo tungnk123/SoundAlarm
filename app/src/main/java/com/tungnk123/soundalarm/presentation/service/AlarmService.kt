@@ -152,6 +152,7 @@ class AlarmService : Service() {
                 isRandom = alarm?.isRandomMusic == true,
                 volume = alarm?.volume ?: 1.0f,
                 fadeInDuration = alarm?.fadeInDuration ?: 0,
+                playlistGroupId = alarm?.playlistGroupId ?: 0L,
             )
         }
 
@@ -241,6 +242,7 @@ class AlarmService : Service() {
         isRandom: Boolean = false,
         volume: Float = 1.0f,
         fadeInDuration: Int = 0,
+        playlistGroupId: Long = 0,
     ) {
         val uriToPlay: Uri? = if (!isRandom && alarmId != INVALID_ALARM_ID) {
             val dayTracks = alarmDayTrackRepository.getTracksForAlarmSync(alarmId)
@@ -250,7 +252,12 @@ class AlarmService : Service() {
             (todayTrack ?: defaultTrack)?.trackUri?.toUri()
         } else null
 
-        val finalUri: Uri? = uriToPlay ?: playlistRepository.getPlaylistTracks().randomOrNull()?.contentUri
+        val randomTrack = if (playlistGroupId != 0L) {
+            playlistRepository.getTracksByPlaylistGroupList(playlistGroupId).randomOrNull()?.contentUri
+        } else {
+            playlistRepository.getPlaylistTracks().randomOrNull()?.contentUri
+        }
+        val finalUri: Uri? = uriToPlay ?: randomTrack
 
         finalUri?.let { uri ->
             withContext(Dispatchers.Main) {

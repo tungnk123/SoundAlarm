@@ -1,15 +1,15 @@
 package com.tungnk123.soundalarm.presentation.alarm.components
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.GraphicEq
 import androidx.compose.material.icons.filled.VolumeUp
@@ -32,7 +32,7 @@ import kotlin.math.roundToInt
 
 private val FADE_IN_OPTIONS = listOf(0, 15, 30, 60, 120)
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SoundSettingsCard(
     volume: Float,
@@ -122,10 +122,9 @@ fun SoundSettingsCard(
                     }
                 }
                 Spacer(Modifier.height(8.dp))
-                FlowRow(
+                Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.horizontalScroll(rememberScrollState()),
                 ) {
                     FADE_IN_OPTIONS.forEach { seconds ->
                         FilterChip(

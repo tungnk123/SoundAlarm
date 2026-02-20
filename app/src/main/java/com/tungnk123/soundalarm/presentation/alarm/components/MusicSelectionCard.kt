@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material.icons.filled.PlaylistPlay
 import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import com.tungnk123.soundalarm.R
 import com.tungnk123.soundalarm.domain.model.AlarmDayTrack
 import com.tungnk123.soundalarm.domain.model.DayOfWeek
+import com.tungnk123.soundalarm.domain.model.PlaylistGroup
 import com.tungnk123.soundalarm.domain.model.TrackSelection
 
 @Composable
@@ -45,9 +47,12 @@ fun MusicSelectionCard(
     isRandomMusic: Boolean,
     dayTracks: Map<String, TrackSelection>,
     repeatDays: Set<DayOfWeek>,
+    playlistGroupId: Long,
+    availablePlaylists: List<PlaylistGroup>,
     onToggleRandomMusic: () -> Unit,
     onShowTrackPickerForDay: (String) -> Unit,
     onRemoveTrackForDay: (String) -> Unit,
+    onShowPlaylistGroupPicker: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ElevatedCard(
@@ -119,6 +124,67 @@ fun MusicSelectionCard(
                     checked = isRandomMusic,
                     onCheckedChange = { onToggleRandomMusic() },
                 )
+            }
+
+            // Playlist group selector — only visible when random music is on
+            AnimatedVisibility(
+                visible = isRandomMusic,
+                enter = expandVertically(),
+                exit = shrinkVertically(),
+            ) {
+                Column {
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                    val selectedPlaylist = availablePlaylists.firstOrNull { it.id == playlistGroupId }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(onClick = onShowPlaylistGroupPicker)
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(
+                                    if (selectedPlaylist != null)
+                                        MaterialTheme.colorScheme.secondaryContainer
+                                    else
+                                        MaterialTheme.colorScheme.surfaceContainerHighest
+                                ),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Icon(
+                                Icons.Default.PlaylistPlay,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                                tint = if (selectedPlaylist != null)
+                                    MaterialTheme.colorScheme.secondary
+                                else
+                                    MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        Spacer(Modifier.width(12.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(R.string.label_random_from_playlist),
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Medium,
+                            )
+                            Text(
+                                text = selectedPlaylist?.name
+                                    ?: stringResource(R.string.label_all_tracks),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = if (selectedPlaylist != null)
+                                    MaterialTheme.colorScheme.secondary
+                                else
+                                    MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    }
+                }
             }
 
             AnimatedVisibility(

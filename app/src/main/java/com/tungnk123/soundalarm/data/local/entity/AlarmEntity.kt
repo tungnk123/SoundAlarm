@@ -20,6 +20,7 @@ data class AlarmEntity(
     val isRandomMusic: Boolean = false,
     val volume: Float = 1.0f,
     val fadeInDuration: Int = 0,
+    val playlistGroupId: Long = 0,
 ) {
     fun toDomain(): Alarm = Alarm(
         id = id,
@@ -37,6 +38,7 @@ data class AlarmEntity(
         isRandomMusic = isRandomMusic,
         volume = volume,
         fadeInDuration = fadeInDuration,
+        playlistGroupId = playlistGroupId,
     )
 
     companion object {
@@ -53,6 +55,7 @@ data class AlarmEntity(
             isRandomMusic = alarm.isRandomMusic,
             volume = alarm.volume,
             fadeInDuration = alarm.fadeInDuration,
+            playlistGroupId = alarm.playlistGroupId,
         )
     }
 }

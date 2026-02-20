@@ -6,6 +6,7 @@ import com.tungnk123.soundalarm.data.local.SoundAlarmDatabase
 import com.tungnk123.soundalarm.data.local.dao.AlarmDao
 import com.tungnk123.soundalarm.data.local.dao.AlarmDayTrackDao
 import com.tungnk123.soundalarm.data.local.dao.PlaylistDao
+import com.tungnk123.soundalarm.data.local.dao.PlaylistGroupDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -45,5 +46,11 @@ object AppModule {
     @Singleton
     fun provideAlarmDayTrackDao(database: SoundAlarmDatabase): AlarmDayTrackDao {
         return database.alarmDayTrackDao()
+    }
+
+    @Provides
+    @Singleton
+    fun providePlaylistGroupDao(database: SoundAlarmDatabase): PlaylistGroupDao {
+        return database.playlistGroupDao()
     }
 }

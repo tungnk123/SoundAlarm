@@ -12,24 +12,35 @@ class PlaylistRepositoryImpl @Inject constructor(
     private val playlistDao: PlaylistDao
 ) : PlaylistRepository {
 
-    override fun getPlaylist(): Flow<List<MusicTrack>> {
-        return playlistDao.getAllTracks().map { entities ->
-            entities.map { it.toDomain() }
-        }
-    }
+    override fun getPlaylist(): Flow<List<MusicTrack>> =
+        playlistDao.getAllTracks().map { entities -> entities.map { it.toDomain() } }
 
-    override suspend fun getPlaylistTracks(): List<MusicTrack> {
-        return playlistDao.getAllTracksList().map { it.toDomain() }
-    }
+    override fun getTracksByPlaylistGroup(playlistGroupId: Long): Flow<List<MusicTrack>> =
+        playlistDao.getTracksByPlaylistGroup(playlistGroupId).map { entities -> entities.map { it.toDomain() } }
 
-    override suspend fun addTrack(track: MusicTrack) {
+    override fun getFavoriteTracks(): Flow<List<MusicTrack>> =
+        playlistDao.getFavoriteTracks().map { entities -> entities.map { it.toDomain() } }
+
+    override suspend fun getPlaylistTracks(): List<MusicTrack> =
+        playlistDao.getAllTracksList().map { it.toDomain() }
+
+    override suspend fun getTracksByPlaylistGroupList(playlistGroupId: Long): List<MusicTrack> =
+        playlistDao.getTracksByPlaylistGroupList(playlistGroupId).map { it.toDomain() }
+
+    override suspend fun addTrack(track: MusicTrack, playlistGroupId: Long) {
         val currentCount = playlistDao.getAllTracksList().size
-        playlistDao.insertTrack(PlaylistEntity.fromDomain(track, sortOrder = currentCount))
+        playlistDao.insertTrack(
+            PlaylistEntity.fromDomain(track, sortOrder = currentCount, playlistGroupId = playlistGroupId)
+        )
     }
 
     override suspend fun removeTrack(track: MusicTrack) {
         val entity = PlaylistEntity.fromDomain(track).copy(id = track.id)
         playlistDao.deleteTrack(entity)
+    }
+
+    override suspend fun setFavorite(trackId: Long, isFavorite: Boolean) {
+        playlistDao.setFavorite(trackId, isFavorite)
     }
 
     override suspend fun updateTrackOrder(tracks: List<MusicTrack>) {
@@ -41,6 +52,8 @@ class PlaylistRepositoryImpl @Inject constructor(
                 duration = track.duration,
                 contentUri = track.contentUri.toString(),
                 sortOrder = index,
+                playlistGroupId = track.playlistGroupId,
+                isFavorite = track.isFavorite,
             )
         }
         playlistDao.updateTracks(entities)

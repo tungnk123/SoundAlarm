@@ -7,25 +7,28 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -34,13 +37,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.math.roundToInt
 
 @Composable
 fun AlarmTriggerScreen(
@@ -59,7 +67,7 @@ fun AlarmTriggerScreen(
         }
     }
 
-    val infiniteTransition = rememberInfiniteTransition(label = "bell")
+    val infiniteTransition = rememberInfiniteTransition(label = "alarm")
     val bellScale by infiniteTransition.animateFloat(
         initialValue = 1f,
         targetValue = 1.15f,
@@ -69,6 +77,23 @@ fun AlarmTriggerScreen(
         ),
         label = "bell_scale",
     )
+    val arrowPulse by infiniteTransition.animateFloat(
+        initialValue = 0.3f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(700, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse,
+        ),
+        label = "arrow_pulse",
+    )
+
+    // Swipe-to-stop gesture state
+    var dragOffsetY by remember { mutableFloatStateOf(0f) }
+    val density = LocalDensity.current
+    val swipeThreshold = remember(density) { with(density) { 150.dp.toPx() } }
+    val clampedOffset = dragOffsetY.coerceIn(-swipeThreshold, 0f)
+    val swipeProgress = (-clampedOffset / swipeThreshold).coerceIn(0f, 1f)
+    val stopColor = lerp(Color.White.copy(alpha = 0.6f), Color(0xFFFF4757), swipeProgress)
 
     Box(
         modifier = Modifier
@@ -130,56 +155,76 @@ fun AlarmTriggerScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 64.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically,
+            // Centered snooze button
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(bottom = 24.dp),
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    FilledTonalButton(
-                        onClick = onSnooze,
-                        modifier = Modifier.size(80.dp),
-                        shape = CircleShape,
-                        colors = ButtonDefaults.filledTonalButtonColors(
-                            containerColor = Color(0xFF3A3A5C),
-                        ),
-                        contentPadding = PaddingValues(0.dp),
-                    ) {
-                        Text(text = "\uD83D\uDCA4", fontSize = 30.sp)
-                    }
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Text(
-                        text = "Snooze 10 min",
-                        color = Color.White.copy(alpha = 0.7f),
-                        fontSize = 12.sp,
-                    )
+                FilledTonalButton(
+                    onClick = onSnooze,
+                    modifier = Modifier.size(80.dp),
+                    shape = CircleShape,
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = Color(0xFF3A3A5C),
+                    ),
+                    contentPadding = PaddingValues(0.dp),
+                ) {
+                    Text(text = "\uD83D\uDCA4", fontSize = 30.sp)
                 }
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    text = "Snooze 10 min",
+                    color = Color.White.copy(alpha = 0.7f),
+                    fontSize = 12.sp,
+                )
+            }
 
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Button(
-                        onClick = onStop,
-                        modifier = Modifier.size(96.dp),
-                        shape = CircleShape,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFFF4757),
-                        ),
-                        contentPadding = PaddingValues(0.dp),
-                    ) {
-                        Text(
-                            text = "■",
-                            fontSize = 32.sp,
-                            color = Color.White,
+            // Swipe-up-to-stop indicator
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .padding(bottom = 48.dp)
+                    .offset { IntOffset(0, clampedOffset.roundToInt()) }
+                    .pointerInput(Unit) {
+                        detectVerticalDragGestures(
+                            onDragEnd = {
+                                if (-dragOffsetY >= swipeThreshold) onStop()
+                                dragOffsetY = 0f
+                            },
+                            onDragCancel = {
+                                dragOffsetY = 0f
+                            },
+                            onVerticalDrag = { _, dragAmount ->
+                                dragOffsetY = (dragOffsetY + dragAmount).coerceAtMost(0f)
+                            },
+                        )
+                    },
+            ) {
+                // Stacked arrows that pulse, turning red as user swipes up
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy((-10).dp),
+                ) {
+                    repeat(3) { i ->
+                        val baseAlpha = 1f - i * 0.25f
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowUp,
+                            contentDescription = null,
+                            tint = stopColor.copy(
+                                alpha = if (swipeProgress > 0.05f) baseAlpha
+                                else (arrowPulse * baseAlpha).coerceIn(0f, 1f),
+                            ),
+                            modifier = Modifier.size(32.dp),
                         )
                     }
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Text(
-                        text = "Stop",
-                        color = Color.White.copy(alpha = 0.7f),
-                        fontSize = 12.sp,
-                    )
                 }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = if (swipeProgress >= 0.8f) "Release to stop" else "Swipe up to stop",
+                    color = stopColor,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                )
             }
         }
     }

@@ -114,4 +114,29 @@
     <string name="label_fade_in_seconds">%ds</string>
     <string name="label_fade_in_1min">1 min</string>
     <string name="label_fade_in_2min">2 min</string>
+
+    <!-- Multiple Playlists -->
+    <string name="title_playlists">Playlists</string>
+    <string name="label_new_playlist">New Playlist</string>
+    <string name="label_playlist_name">Playlist name</string>
+    <string name="label_rename_playlist">Rename Playlist</string>
+    <string name="message_no_playlists">No playlists yet</string>
+    <string name="message_tap_to_create_playlist">Tap + to create your first playlist</string>
+    <string name="dialog_delete_playlist_title">Delete Playlist</string>
+    <string name="dialog_delete_playlist_message">Delete \"%s\" and all its tracks?</string>
+    <string name="button_create">Create</string>
+    <string name="button_rename">Rename</string>
+    <string name="cd_rename_playlist">Rename playlist</string>
+
+    <!-- Favorite Songs -->
+    <string name="label_favorites">Favorites</string>
+    <string name="label_all">All</string>
+    <string name="message_no_favorites">No favorite tracks yet</string>
+    <string name="cd_toggle_favorite">Toggle favorite</string>
+
+    <!-- Playlist Group Selector (Alarm Detail) -->
+    <string name="label_random_from_playlist">Play from playlist</string>
+    <string name="label_all_tracks">All playlists</string>
+    <string name="label_select_playlist">Select Playlist</string>
 </resources>
+
