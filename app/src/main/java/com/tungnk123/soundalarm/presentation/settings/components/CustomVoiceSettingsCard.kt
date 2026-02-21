@@ -84,6 +84,7 @@ fun CustomVoiceSettingsCard(
                 Text(stringResource(R.string.settings_custom_voice_change))
             }
         } else {
+            Spacer(Modifier.width(8.dp))
             Button(
                 onClick = onPickVoice,
                 modifier = Modifier.fillMaxWidth(),

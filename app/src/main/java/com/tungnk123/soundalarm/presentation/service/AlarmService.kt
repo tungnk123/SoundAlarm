@@ -172,10 +172,10 @@ class AlarmService : Service() {
             if (alarm?.isVibrate != false) {
                 withContext(Dispatchers.Main) { startVibration() }
             }
-            if (settings.readTimeAloud) {
+            val customVoicePath = settings.customVoiceAudioPath
+            if (settings.readTimeAloud && customVoicePath.isEmpty()) {
                 withContext(Dispatchers.Main) { speakCurrentTime() }
             }
-            val customVoicePath = settings.customVoiceAudioPath
             if (customVoicePath.isNotEmpty() && settings.voiceBeforeMusic) {
                 withContext(Dispatchers.Main) {
                     playCustomVoiceAudioThenMusic(
