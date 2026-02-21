@@ -1,0 +1,233 @@
+<resources>
+    <string name="app_name">SoundAlarm</string>
+
+    <!-- App / TopAppBar titles -->
+    <string name="title_app">Báo Thức Âm Thanh</string>
+    <string name="title_alarm_detail_new">Báo Thức Mới</string>
+    <string name="title_alarm_detail_edit">Chỉnh Sửa Báo Thức</string>
+    <string name="title_settings">Cài Đặt</string>
+    <string name="title_playlist">Danh Sách Nhạc Báo Thức</string>
+    <string name="title_music_selection">Chọn Nhạc</string>
+
+    <!-- Content descriptions -->
+    <string name="cd_music_selection">Chọn Nhạc</string>
+    <string name="cd_settings">Cài Đặt</string>
+    <string name="cd_add_alarm">Thêm Báo Thức</string>
+    <string name="cd_back">Quay Lại</string>
+    <string name="cd_save">Lưu</string>
+    <string name="cd_delete_alarm">Xóa báo thức</string>
+    <string name="cd_add_music">Thêm Nhạc</string>
+    <string name="cd_remove_track">Xóa bài</string>
+    <string name="cd_remove">Xóa</string>
+    <string name="cd_pause">Tạm Dừng</string>
+    <string name="cd_preview">Xem Trước</string>
+
+    <!-- Home Screen -->
+    <string name="message_no_alarms">Chưa có báo thức</string>
+    <string name="message_tap_add_alarm">Nhấn + để thêm báo thức đầu tiên</string>
+    <string name="message_next_alarm_hours_minutes">Báo thức tiếp theo sau %1$s %2$s</string>
+    <string name="message_next_alarm_soon">Báo thức sắp reo</string>
+    <plurals name="next_alarm_hours_part">
+        <item quantity="other">%d giờ</item>
+    </plurals>
+    <plurals name="next_alarm_minutes_part">
+        <item quantity="other">%d phút</item>
+    </plurals>
+    <plurals name="next_alarm_minutes_only">
+        <item quantity="other">Báo thức tiếp theo sau %d phút</item>
+    </plurals>
+
+    <!-- Home Screen Tutorial -->
+    <string name="tutorial_title">Chào Mừng Đến Với Sound Alarm!</string>
+    <string name="tutorial_step1_title">Bước 1: Tạo Danh Sách Nhạc</string>
+    <string name="tutorial_step1_desc">Thêm nhạc yêu thích vào danh sách để thức dậy cùng âm nhạc.</string>
+    <string name="tutorial_btn_create_playlist">Tạo Danh Sách</string>
+    <string name="tutorial_step2_title">Bước 2: Đặt Báo Thức</string>
+    <string name="tutorial_step2_desc">Nhấn nút + bên dưới để tạo báo thức và chọn danh sách nhạc.</string>
+
+    <!-- Alarm Detail Screen -->
+    <string name="label_alarm_label">Nhãn</string>
+    <string name="label_repeat">Lặp Lại</string>
+    <string name="label_one_time">Một Lần</string>
+    <string name="label_vibrate">Rung</string>
+    <string name="label_music">Nhạc</string>
+    <string name="label_default">Mặc Định</string>
+    <string name="label_default_all_days">Mặc Định (tất cả ngày)</string>
+    <string name="label_tap_to_change_time">Nhấn để đổi giờ</string>
+    <string name="label_select_time">Chọn giờ</string>
+    <string name="label_delete_after_alarm">Xóa sau khi báo thức reo</string>
+    <string name="label_delete_after_alarm_desc">Tự động xóa báo thức sau khi reo</string>
+    <string name="message_select_track_for">Chọn bài cho %s</string>
+    <string name="message_no_tracks_in_playlist">Danh sách trống. Thêm nhạc từ màn hình chính.</string>
+    <string name="label_go_to_playlist">Đến Danh Sách Nhạc</string>
+    <string name="message_no_tracks_go_to_playlist">Nhấn để thêm nhạc, sau đó quay lại để chọn bài.</string>
+    <string name="label_random_music">Phát ngẫu nhiên</string>
+    <string name="label_random_music_desc">Chọn ngẫu nhiên một bài từ danh sách mỗi lần báo thức reo</string>
+    <string name="label_random_music_short">Ngẫu Nhiên</string>
+    <string name="label_no_vibrate">Không Rung</string>
+    <string name="message_music_selection_help">Chọn bài nhạc cho từng ngày. \"Mặc định\" được dùng khi không có bài nào được chỉ định.</string>
+    <string name="message_tap_select_track">Nhấn để chọn bài</string>
+    <string name="button_select">Chọn</string>
+
+    <!-- Playlist Screen -->
+    <string name="message_no_music_playlist">Danh sách trống</string>
+    <string name="message_tap_add_music">Nhấn + để thêm nhạc</string>
+    <string name="message_track_removed">Đã xóa \"%s\" khỏi danh sách</string>
+
+    <!-- Music Selection Screen -->
+    <string name="message_permission_required">Cần quyền truy cập nhạc</string>
+    <string name="button_grant_permission">Cấp Quyền</string>
+    <string name="message_no_music_found">Không tìm thấy nhạc trên thiết bị</string>
+    <string name="message_track_added">Đã thêm \"%s\" vào danh sách</string>
+    <string name="message_add_error">Không thể thêm bài</string>
+    <string name="message_error_format">Lỗi: %s</string>
+
+    <!-- Settings Screen -->
+    <string name="message_settings_description">Màn hình cài đặt - tùy chỉnh báo thức của bạn.</string>
+    <string name="settings_section_snooze">Báo Lại</string>
+    <string name="settings_section_notification">Thông Báo</string>
+    <string name="settings_section_power">Nguồn Điện</string>
+
+    <string name="settings_snooze_count">Số Lần Báo Lại</string>
+    <string name="settings_snooze_count_desc">Số lần tối đa bạn có thể báo lại trước khi báo thức dừng</string>
+    <string name="settings_unlimited">Không Giới Hạn</string>
+
+    <string name="settings_alarm_duration">Thời Gian Reo</string>
+    <string name="settings_alarm_duration_desc">Tự động dừng sau khoảng thời gian này</string>
+    <string name="settings_minutes">%d phút</string>
+
+    <string name="settings_pre_alarm_notification">Thông Báo Trước Báo Thức</string>
+    <string name="settings_pre_alarm_notification_desc">Hiển thị thông báo nhắc nhở trước khi báo thức reo</string>
+    <string name="settings_pre_alarm_notification_time">Thời Gian Thông Báo Trước</string>
+    <string name="settings_pre_alarm_notification_time_desc">Số phút trước báo thức để hiển thị thông báo</string>
+
+    <string name="settings_alarm_when_power_off">Báo Thức Khi Màn Hình Tắt</string>
+    <string name="settings_alarm_when_power_off_desc">Dùng chế độ báo thức hệ thống để reo ngay cả khi màn hình tắt</string>
+    <string name="settings_alarm_when_power_off_note">Tính năng này dùng setAlarmClock() của hệ thống, hiển thị biểu tượng báo thức trên thanh trạng thái. Khả năng reo khi thiết bị tắt hoàn toàn phụ thuộc vào nhà sản xuất.</string>
+
+    <!-- Sound settings -->
+    <string name="settings_section_sound">Âm Thanh Mặc Định</string>
+    <string name="settings_default_volume">Âm Lượng Mặc Định</string>
+    <string name="settings_default_volume_desc">Áp dụng cho báo thức mới khi tạo</string>
+    <string name="settings_default_fade_in">Tăng Dần Mặc Định</string>
+    <string name="settings_default_fade_in_desc">Tăng âm lượng dần khi báo thức bắt đầu</string>
+    <string name="settings_default_fade_out">Giảm Dần Mặc Định</string>
+    <string name="settings_default_fade_out_desc">Giảm âm lượng dần trước khi báo thức kết thúc</string>
+    <string name="settings_fade_off">Tắt</string>
+    <string name="settings_seconds">%ds</string>
+    <string name="settings_default_playlist">Danh Sách Nhạc Mặc Định</string>
+    <string name="settings_default_playlist_desc">Chọn trước danh sách này cho báo thức mới</string>
+    <string name="settings_no_playlist">Không Có</string>
+
+    <!-- Pre-alarm notification -->
+    <string name="notification_pre_alarm_title">Báo Thức Sắp Reo</string>
+    <string name="notification_pre_alarm_text">%1$s – reo sau %2$d phút</string>
+
+    <!-- Playlist reorder -->
+    <string name="cd_drag_to_reorder">Kéo để sắp xếp</string>
+    <string name="cd_edit_time">Chỉnh sửa giờ</string>
+    <string name="button_cancel">Hủy</string>
+    <string name="button_ok">OK</string>
+    <string name="button_delete">Xóa</string>
+    <string name="button_remove">Xóa</string>
+    <string name="button_clear">Xóa</string>
+    <string name="label_one_time_alarm">Báo thức một lần</string>
+    <string name="label_repeats_days">Lặp lại: %s</string>
+
+    <!-- Delete / Remove confirmation dialogs -->
+    <string name="dialog_delete_alarm_title">Xóa Báo Thức</string>
+    <string name="dialog_delete_alarm_message">Báo thức này sẽ bị xóa vĩnh viễn.</string>
+    <string name="dialog_remove_track_title">Xóa Bài Hát</string>
+    <string name="dialog_remove_track_message">Xóa \"%s\" khỏi danh sách?</string>
+    <string name="dialog_remove_day_track_title">Xóa Bài Hát</string>
+    <string name="dialog_remove_day_track_message">Xóa bài hát đã chọn cho ngày này?</string>
+
+    <!-- Snooze banner -->
+    <string name="snooze_banner_title">Đã Báo Lại</string>
+    <string name="snooze_banner_subtitle">%1$s – reo lúc %2$s</string>
+    <string name="snooze_banner_cancel">Hủy</string>
+
+    <!-- Snooze notification -->
+    <string name="notification_snooze_title">Đã Báo Lại</string>
+    <string name="notification_snooze_text">%1$s – reo lúc %2$s</string>
+
+    <!-- Sound Settings -->
+    <string name="label_sound_settings">Cài Đặt Âm Thanh</string>
+    <string name="label_volume">Âm Lượng</string>
+    <string name="label_fade_in">Tăng Dần</string>
+    <string name="label_fade_in_desc">Tăng âm lượng dần khi báo thức bắt đầu</string>
+    <string name="label_fade_in_off">Tắt</string>
+    <string name="label_fade_in_seconds">%ds</string>
+    <string name="label_fade_in_1min">1 phút</string>
+    <string name="label_fade_in_2min">2 phút</string>
+
+    <!-- Multiple Playlists -->
+    <string name="title_playlists">Danh Sách Nhạc</string>
+    <string name="label_new_playlist">Danh Sách Mới</string>
+    <string name="label_playlist_name">Tên danh sách</string>
+    <string name="label_rename_playlist">Đổi Tên Danh Sách</string>
+    <string name="message_no_playlists">Chưa có danh sách</string>
+    <string name="message_tap_to_create_playlist">Nhấn + để tạo danh sách đầu tiên</string>
+    <string name="dialog_delete_playlist_title">Xóa Danh Sách</string>
+    <string name="dialog_delete_playlist_message">Xóa \"%s\" và tất cả bài hát?</string>
+    <string name="button_create">Tạo</string>
+    <string name="button_rename">Đổi Tên</string>
+    <string name="cd_rename_playlist">Đổi tên danh sách</string>
+
+    <!-- Favorite Songs -->
+    <string name="label_favorites">Yêu Thích</string>
+    <string name="label_all">Tất Cả</string>
+    <string name="message_no_favorites">Chưa có bài yêu thích</string>
+    <string name="cd_toggle_favorite">Bật/tắt yêu thích</string>
+
+    <!-- Playlist Group Selector (Alarm Detail) -->
+    <string name="label_random_from_playlist">Phát từ danh sách</string>
+    <string name="label_all_tracks">Tất Cả Danh Sách</string>
+    <string name="label_select_playlist">Chọn Danh Sách</string>
+
+    <!-- Accessibility Settings -->
+    <string name="settings_section_accessibility">Hỗ Trợ Tiếp Cận</string>
+    <string name="settings_read_time_aloud">Đọc Giờ To</string>
+    <string name="settings_read_time_aloud_desc">Thông báo giờ hiện tại khi báo thức reo</string>
+    <string name="settings_announcement_template">Văn Bản Thông Báo</string>
+    <string name="settings_announcement_template_hint">Dùng {time} làm ký hiệu thay thế — vd: "Bây giờ là {time}"</string>
+
+    <!-- Custom Voice Settings -->
+    <string name="settings_section_custom_voice">Giọng Nói Tùy Chỉnh</string>
+    <string name="settings_custom_voice_desc">Nhập tệp âm thanh đã ghi để phát cùng báo thức. Hoàn hảo cho tin nhắn thức dậy cá nhân.</string>
+    <string name="settings_custom_voice_pick">Chọn Tệp Giọng Nói</string>
+    <string name="settings_custom_voice_change">Đổi Tệp Giọng Nói</string>
+    <string name="settings_custom_voice_remove">Xóa giọng nói</string>
+    <string name="settings_custom_voice_before_music">Phát giọng nói trước nhạc</string>
+    <string name="settings_custom_voice_before_music_desc">Tin nhắn giọng nói phát trước, sau đó nhạc mới bắt đầu</string>
+
+    <!-- Language Settings -->
+    <string name="settings_section_language">Ngôn Ngữ</string>
+    <string name="settings_language">Ngôn Ngữ Ứng Dụng</string>
+    <string name="settings_language_desc">Chọn ngôn ngữ hiển thị</string>
+    <string name="settings_language_en">English</string>
+    <string name="settings_language_vi">Tiếng Việt</string>
+
+    <!-- Notification content (alarm service) -->
+    <string name="notification_alarm_title">Báo thức: %s</string>
+    <string name="notification_alarm_content">Nhấn để xem báo thức</string>
+    <string name="notification_action_snooze">Báo lại</string>
+    <string name="notification_action_stop">Dừng</string>
+    <string name="notification_action_cancel_snooze">Hủy Báo Lại</string>
+
+    <!-- Notification channel names (visible in system settings) -->
+    <string name="notification_channel_alarm_name">Kênh Báo Thức</string>
+    <string name="notification_channel_alarm_desc">Kênh dành cho thông báo báo thức</string>
+    <string name="notification_channel_snooze_name">Báo Thức Đã Báo Lại</string>
+    <string name="notification_channel_snooze_desc">Hiển thị các báo thức đang báo lại</string>
+    <string name="notification_channel_pre_alarm_name">Nhắc Nhở Trước Báo Thức</string>
+    <string name="notification_channel_pre_alarm_desc">Thông báo hiển thị trước khi báo thức reo</string>
+
+    <!-- Alarm trigger screen -->
+    <string name="trigger_snooze_button">Báo lại 10 phút</string>
+    <string name="trigger_swipe_to_stop">Vuốt lên để dừng</string>
+    <string name="trigger_release_to_stop">Thả để dừng</string>
+
+    <!-- Fallback alarm label -->
+    <string name="label_alarm_default">Báo thức</string>
+</resources>

@@ -38,4 +38,15 @@ class SettingsRepositoryImpl @Inject constructor(
         manager.updateDefaultFadeOutDuration(seconds)
 
     override suspend fun updateDefaultPlaylistId(id: Long) = manager.updateDefaultPlaylistId(id)
+
+    override suspend fun updateReadTimeAloud(enabled: Boolean) = manager.updateReadTimeAloud(enabled)
+
+    override suspend fun updateTimeAnnouncementTemplate(template: String) =
+        manager.updateTimeAnnouncementTemplate(template)
+
+    override suspend fun updateCustomVoiceAudioPath(path: String) =
+        manager.updateCustomVoiceAudioPath(path)
+
+    override suspend fun updateVoiceBeforeMusic(enabled: Boolean) =
+        manager.updateVoiceBeforeMusic(enabled)
 }

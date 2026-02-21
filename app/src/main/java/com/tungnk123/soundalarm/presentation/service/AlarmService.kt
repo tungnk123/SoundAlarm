@@ -8,17 +8,24 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
+import android.media.AudioAttributes
+import android.media.AudioManager
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.os.IBinder
 import android.os.VibrationAttributes
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.speech.tts.TextToSpeech
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
 import com.tungnk123.soundalarm.R
 import com.tungnk123.soundalarm.domain.model.AlarmDayTrack
+import com.tungnk123.soundalarm.domain.model.AppSettings
 import com.tungnk123.soundalarm.domain.repository.AlarmDayTrackRepository
 import com.tungnk123.soundalarm.domain.repository.AlarmRepository
 import com.tungnk123.soundalarm.domain.repository.PlaylistRepository
@@ -68,6 +75,8 @@ class AlarmService : Service() {
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var vibrator: Vibrator? = null
     private var autoStopJob: Job? = null
+    private var tts: TextToSpeech? = null
+    private var customVoicePlayer: MediaPlayer? = null
 
     companion object {
         const val CHANNEL_ID = "ALARM_CHANNEL"
@@ -82,7 +91,6 @@ class AlarmService : Service() {
         const val EXTRA_ALARM_LABEL = "ALARM_LABEL"
 
         private const val INVALID_ALARM_ID = -1L
-        private const val DEFAULT_ALARM_LABEL = "Alarm"
         private const val SNOOZE_DURATION_MS = 10 * 60 * 1000L
         const val SNOOZE_REQUEST_CODE_MULTIPLIER = 1000
         const val SNOOZE_REQUEST_CODE_OFFSET = 999
@@ -91,18 +99,11 @@ class AlarmService : Service() {
         private const val SNOOZE_REQUEST_CODE = 1
         private const val CANCEL_SNOOZE_REQUEST_CODE = 2
         private const val NO_ICON = 0
-        private const val CHANNEL_NAME = "Alarm Channel"
-        private const val CHANNEL_DESCRIPTION = "Channel for Alarm Notifications"
-        private const val SNOOZE_CHANNEL_NAME = "Snoozed Alarms"
-        private const val SNOOZE_CHANNEL_DESCRIPTION = "Shows active snoozed alarms"
-        private const val NOTIFICATION_CONTENT_TEXT = "Tap to view alarm"
-
-        private const val ACTION_LABEL_SNOOZE = "Snooze"
-        private const val ACTION_LABEL_STOP = "Stop"
-        private const val ACTION_LABEL_CANCEL_SNOOZE = "Cancel Snooze"
 
         private val VIBRATION_PATTERN = longArrayOf(0, 600, 400)
         private val VIBRATION_AMPLITUDES = intArrayOf(0, 255, 0)
+        private const val TTS_UTTERANCE_ID = "alarm_time_announcement"
+        const val TIME_PLACEHOLDER = "{time}"
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -119,6 +120,7 @@ class AlarmService : Service() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             ACTION_STOP_ALARM -> {
@@ -131,7 +133,7 @@ class AlarmService : Service() {
             }
             ACTION_SNOOZE_ALARM -> {
                 val alarmId = intent.getLongExtra(EXTRA_ALARM_ID, INVALID_ALARM_ID)
-                val alarmLabel = intent.getStringExtra(EXTRA_ALARM_LABEL) ?: DEFAULT_ALARM_LABEL
+                val alarmLabel = intent.getStringExtra(EXTRA_ALARM_LABEL) ?: getString(R.string.label_alarm_default)
                 val settings = settingsRepository.getSettings()
                 val snoozeCount = snoozeManager.getSnoozeCount(alarmId)
                 val maxSnooze = settings.snoozeCount
@@ -146,17 +148,13 @@ class AlarmService : Service() {
         }
 
         val alarmId = intent?.getLongExtra(EXTRA_ALARM_ID, INVALID_ALARM_ID) ?: INVALID_ALARM_ID
-        val alarmLabel = intent?.getStringExtra(EXTRA_ALARM_LABEL) ?: DEFAULT_ALARM_LABEL
+        val alarmLabel = intent?.getStringExtra(EXTRA_ALARM_LABEL).orEmpty()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            startForeground(
-                NOTIFICATION_ID,
-                createNotification(alarmId, alarmLabel),
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK,
-            )
-        } else {
-            startForeground(NOTIFICATION_ID, createNotification(alarmId, alarmLabel))
-        }
+        startForeground(
+            NOTIFICATION_ID,
+            createNotification(alarmId, alarmLabel),
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK,
+        )
 
         val settings = settingsRepository.getSettings()
         val durationMs = settings.alarmDuration * 60 * 1000L
@@ -174,33 +172,142 @@ class AlarmService : Service() {
             if (alarm?.isVibrate != false) {
                 withContext(Dispatchers.Main) { startVibration() }
             }
-            playTrackForAlarm(
-                alarmId = alarmId,
-                isRandom = alarm?.isRandomMusic == true,
-                volume = alarm?.volume ?: 1.0f,
-                fadeInDuration = alarm?.fadeInDuration ?: 0,
-                playlistGroupId = alarm?.playlistGroupId ?: 0L,
-            )
+            if (settings.readTimeAloud) {
+                withContext(Dispatchers.Main) { speakCurrentTime() }
+            }
+            val customVoicePath = settings.customVoiceAudioPath
+            if (customVoicePath.isNotEmpty() && settings.voiceBeforeMusic) {
+                withContext(Dispatchers.Main) {
+                    playCustomVoiceAudioThenMusic(
+                        path = customVoicePath,
+                        alarmId = alarmId,
+                        isRandom = alarm?.isRandomMusic == true,
+                        volume = alarm?.volume ?: 1.0f,
+                        fadeInDuration = alarm?.fadeInDuration ?: 0,
+                        playlistGroupId = alarm?.playlistGroupId ?: 0L,
+                    )
+                }
+            } else {
+                if (customVoicePath.isNotEmpty()) {
+                    withContext(Dispatchers.Main) { playCustomVoiceAudio(customVoicePath) }
+                }
+                playTrackForAlarm(
+                    alarmId = alarmId,
+                    isRandom = alarm?.isRandomMusic == true,
+                    volume = alarm?.volume ?: 1.0f,
+                    fadeInDuration = alarm?.fadeInDuration ?: 0,
+                    playlistGroupId = alarm?.playlistGroupId ?: 0L,
+                )
+            }
         }
 
         return START_STICKY
     }
 
+    private fun speakCurrentTime() {
+        val cal = java.util.Calendar.getInstance()
+        val hour24 = cal.get(java.util.Calendar.HOUR_OF_DAY)
+        val minute = cal.get(java.util.Calendar.MINUTE)
+        val spokenTime = buildSpokenTime(hour24, minute)
+
+        val settings = settingsRepository.getSettings()
+        val template = settings.timeAnnouncementTemplate
+            .ifBlank { AppSettings.DEFAULT_TIME_ANNOUNCEMENT_TEMPLATE }
+        val announcement = template.replace(TIME_PLACEHOLDER, spokenTime)
+
+        tts = TextToSpeech(this) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                tts?.language = Locale.getDefault()
+                val params = Bundle().apply {
+                    putInt(TextToSpeech.Engine.KEY_PARAM_STREAM, AudioManager.STREAM_ALARM)
+                }
+                tts?.speak(announcement, TextToSpeech.QUEUE_FLUSH, params, TTS_UTTERANCE_ID)
+            }
+        }
+    }
+
+    private fun playCustomVoiceAudio(path: String) {
+        val file = java.io.File(path)
+        if (!file.exists()) return
+        try {
+            customVoicePlayer = MediaPlayer().apply {
+                setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_ALARM)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .build(),
+                )
+                setDataSource(path)
+                prepare()
+                start()
+            }
+        } catch (_: Exception) {
+        }
+    }
+
+    private fun playCustomVoiceAudioThenMusic(
+        path: String,
+        alarmId: Long,
+        isRandom: Boolean,
+        volume: Float,
+        fadeInDuration: Int,
+        playlistGroupId: Long,
+    ) {
+        val file = java.io.File(path)
+        if (!file.exists()) {
+            serviceScope.launch { playTrackForAlarm(alarmId, isRandom, volume, fadeInDuration, playlistGroupId) }
+            return
+        }
+        try {
+            customVoicePlayer = MediaPlayer().apply {
+                setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_ALARM)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .build(),
+                )
+                setDataSource(path)
+                setOnCompletionListener {
+                    serviceScope.launch { playTrackForAlarm(alarmId, isRandom, volume, fadeInDuration, playlistGroupId) }
+                }
+                prepare()
+                start()
+            }
+        } catch (_: Exception) {
+            serviceScope.launch { playTrackForAlarm(alarmId, isRandom, volume, fadeInDuration, playlistGroupId) }
+        }
+    }
+
+    private fun buildSpokenTime(hour24: Int, minute: Int): String {
+        val isPm = hour24 >= 12
+        val hour12 = when {
+            hour24 == 0 -> 12
+            hour24 > 12 -> hour24 - 12
+            else -> hour24
+        }
+        val amPm = if (isPm) "PM" else "AM"
+        return if (minute == 0) {
+            "$hour12 o'clock $amPm"
+        } else {
+            "$hour12 hours $minute minutes $amPm"
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun startVibration() {
         val effect = VibrationEffect.createWaveform(VIBRATION_PATTERN, VIBRATION_AMPLITUDES, 0)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val attrs = VibrationAttributes.Builder()
-                .setUsage(VibrationAttributes.USAGE_ALARM)
-                .build()
-            vibrator?.vibrate(effect, attrs)
-        } else {
-            vibrator?.vibrate(effect)
-        }
+        val attrs = VibrationAttributes.Builder()
+            .setUsage(VibrationAttributes.USAGE_ALARM)
+            .build()
+        vibrator?.vibrate(effect, attrs)
     }
 
     private fun stopAlarmAndNotify() {
         vibrator?.cancel()
         audioPlayer.stop()
+        customVoicePlayer?.stop()
+        customVoicePlayer?.release()
+        customVoicePlayer = null
         sendBroadcast(Intent(ACTION_ALARM_STOPPED).apply {
             setPackage(packageName)
         })
@@ -257,7 +364,7 @@ class AlarmService : Service() {
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setOngoing(true)
-            .addAction(NO_ICON, ACTION_LABEL_CANCEL_SNOOZE, cancelSnoozePendingIntent)
+            .addAction(NO_ICON, getString(R.string.notification_action_cancel_snooze), cancelSnoozePendingIntent)
             .build()
 
         val notificationManager = getSystemService(NotificationManager::class.java)
@@ -324,26 +431,26 @@ class AlarmService : Service() {
         )
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Alarm: $label")
-            .setContentText(NOTIFICATION_CONTENT_TEXT)
+            .setContentTitle(getString(R.string.notification_alarm_title, label))
+            .setContentText(getString(R.string.notification_alarm_content))
             .setSmallIcon(R.mipmap.ic_launcher)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setOngoing(true)
             .setFullScreenIntent(fullScreenPendingIntent, true)
-            .addAction(NO_ICON, ACTION_LABEL_SNOOZE, snoozePendingIntent)
-            .addAction(NO_ICON, ACTION_LABEL_STOP, stopPendingIntent)
+            .addAction(NO_ICON, getString(R.string.notification_action_snooze), snoozePendingIntent)
+            .addAction(NO_ICON, getString(R.string.notification_action_stop), stopPendingIntent)
             .build()
     }
 
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
             CHANNEL_ID,
-            CHANNEL_NAME,
+            getString(R.string.notification_channel_alarm_name),
             NotificationManager.IMPORTANCE_HIGH,
         ).apply {
-            description = CHANNEL_DESCRIPTION
+            description = getString(R.string.notification_channel_alarm_desc)
             setSound(null, null)
         }
         val manager = getSystemService(NotificationManager::class.java)
@@ -353,10 +460,10 @@ class AlarmService : Service() {
     private fun createSnoozeNotificationChannel() {
         val channel = NotificationChannel(
             SNOOZE_CHANNEL_ID,
-            SNOOZE_CHANNEL_NAME,
+            getString(R.string.notification_channel_snooze_name),
             NotificationManager.IMPORTANCE_DEFAULT,
         ).apply {
-            description = SNOOZE_CHANNEL_DESCRIPTION
+            description = getString(R.string.notification_channel_snooze_desc)
             setSound(null, null)
         }
         val manager = getSystemService(NotificationManager::class.java)
@@ -367,6 +474,12 @@ class AlarmService : Service() {
         super.onDestroy()
         autoStopJob?.cancel()
         serviceScope.cancel()
+        tts?.stop()
+        tts?.shutdown()
+        tts = null
+        customVoicePlayer?.stop()
+        customVoicePlayer?.release()
+        customVoicePlayer = null
     }
 }
 

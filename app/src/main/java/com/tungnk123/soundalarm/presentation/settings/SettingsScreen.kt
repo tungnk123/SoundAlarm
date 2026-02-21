@@ -14,18 +14,27 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import android.app.Activity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tungnk123.soundalarm.R
+import com.tungnk123.soundalarm.presentation.settings.components.AccessibilitySettingsCard
+import com.tungnk123.soundalarm.presentation.settings.components.CustomVoiceSettingsCard
+import com.tungnk123.soundalarm.presentation.settings.components.LanguageSettingsCard
 import com.tungnk123.soundalarm.presentation.settings.components.NotificationSettingsCard
 import com.tungnk123.soundalarm.presentation.settings.components.PowerSettingsCard
 import com.tungnk123.soundalarm.presentation.settings.components.SnoozeSettingsCard
 import com.tungnk123.soundalarm.presentation.settings.components.SoundSettingsCard
+import com.tungnk123.soundalarm.util.LocaleManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,6 +44,12 @@ fun SettingsScreen(
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val playlists by viewModel.playlists.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val activity = remember(context) { context as? Activity }
+    val currentLanguage = remember(context) { LocaleManager.getLanguage(context) }
+    val voiceLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let { viewModel.importCustomVoice(it) }
+    }
 
     Scaffold(
         topBar = {
@@ -81,6 +96,24 @@ fun SettingsScreen(
             PowerSettingsCard(
                 settings = settings,
                 onAlarmWhenPowerOffChange = viewModel::updateAlarmWhenPowerOff,
+            )
+            AccessibilitySettingsCard(
+                settings = settings,
+                onReadTimeAloudChange = viewModel::updateReadTimeAloud,
+                onTimeAnnouncementTemplateChange = viewModel::updateTimeAnnouncementTemplate,
+            )
+            CustomVoiceSettingsCard(
+                settings = settings,
+                onPickVoice = { voiceLauncher.launch("audio/*") },
+                onRemoveVoice = viewModel::removeCustomVoice,
+                onVoiceBeforeMusicChange = viewModel::updateVoiceBeforeMusic,
+            )
+            LanguageSettingsCard(
+                currentLanguage = currentLanguage,
+                onLanguageChange = { lang ->
+                    LocaleManager.setLanguage(context, lang)
+                    activity?.recreate()
+                },
             )
         }
     }

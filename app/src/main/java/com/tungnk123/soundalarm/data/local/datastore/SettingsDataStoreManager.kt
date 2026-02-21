@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.tungnk123.soundalarm.domain.model.AppSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -84,6 +85,22 @@ class SettingsDataStoreManager @Inject constructor(
         dataStore.edit { it[Keys.DEFAULT_PLAYLIST_ID] = id }
     }
 
+    suspend fun updateReadTimeAloud(enabled: Boolean) {
+        dataStore.edit { it[Keys.READ_TIME_ALOUD] = enabled }
+    }
+
+    suspend fun updateTimeAnnouncementTemplate(template: String) {
+        dataStore.edit { it[Keys.TIME_ANNOUNCEMENT_TEMPLATE] = template }
+    }
+
+    suspend fun updateCustomVoiceAudioPath(path: String) {
+        dataStore.edit { it[Keys.CUSTOM_VOICE_AUDIO_PATH] = path }
+    }
+
+    suspend fun updateVoiceBeforeMusic(enabled: Boolean) {
+        dataStore.edit { it[Keys.VOICE_BEFORE_MUSIC] = enabled }
+    }
+
     private fun Preferences.toAppSettings() = AppSettings(
         snoozeCount = this[Keys.SNOOZE_COUNT] ?: AppSettings.DEFAULT_SNOOZE_COUNT,
         alarmDuration = this[Keys.ALARM_DURATION] ?: AppSettings.DEFAULT_ALARM_DURATION,
@@ -94,6 +111,10 @@ class SettingsDataStoreManager @Inject constructor(
         defaultFadeInDuration = this[Keys.DEFAULT_FADE_IN_DURATION] ?: AppSettings.DEFAULT_FADE_IN_DURATION,
         defaultFadeOutDuration = this[Keys.DEFAULT_FADE_OUT_DURATION] ?: AppSettings.DEFAULT_FADE_OUT_DURATION,
         defaultPlaylistId = this[Keys.DEFAULT_PLAYLIST_ID] ?: AppSettings.NO_DEFAULT_PLAYLIST,
+        readTimeAloud = this[Keys.READ_TIME_ALOUD] ?: AppSettings.DEFAULT_READ_TIME_ALOUD,
+        timeAnnouncementTemplate = this[Keys.TIME_ANNOUNCEMENT_TEMPLATE] ?: AppSettings.DEFAULT_TIME_ANNOUNCEMENT_TEMPLATE,
+        customVoiceAudioPath = this[Keys.CUSTOM_VOICE_AUDIO_PATH] ?: AppSettings.DEFAULT_CUSTOM_VOICE_AUDIO_PATH,
+        voiceBeforeMusic = this[Keys.VOICE_BEFORE_MUSIC] ?: AppSettings.DEFAULT_VOICE_BEFORE_MUSIC,
     )
 
     object Keys {
@@ -107,5 +128,9 @@ class SettingsDataStoreManager @Inject constructor(
         val DEFAULT_FADE_OUT_DURATION = intPreferencesKey("default_fade_out_duration")
         val DEFAULT_PLAYLIST_ID = longPreferencesKey("default_playlist_id")
         val DEFAULTS_INITIALIZED = booleanPreferencesKey("defaults_initialized")
+        val READ_TIME_ALOUD = booleanPreferencesKey("read_time_aloud")
+        val TIME_ANNOUNCEMENT_TEMPLATE = stringPreferencesKey("time_announcement_template")
+        val CUSTOM_VOICE_AUDIO_PATH = stringPreferencesKey("custom_voice_audio_path")
+        val VOICE_BEFORE_MUSIC = booleanPreferencesKey("voice_before_music")
     }
 }

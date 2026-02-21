@@ -15,4 +15,8 @@ interface SettingsRepository {
     suspend fun updateDefaultFadeInDuration(seconds: Int)
     suspend fun updateDefaultFadeOutDuration(seconds: Int)
     suspend fun updateDefaultPlaylistId(id: Long)
+    suspend fun updateReadTimeAloud(enabled: Boolean)
+    suspend fun updateTimeAnnouncementTemplate(template: String)
+    suspend fun updateCustomVoiceAudioPath(path: String)
+    suspend fun updateVoiceBeforeMusic(enabled: Boolean)
 }

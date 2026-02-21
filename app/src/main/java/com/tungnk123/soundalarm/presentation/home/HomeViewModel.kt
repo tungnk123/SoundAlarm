@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tungnk123.soundalarm.R
 import com.tungnk123.soundalarm.domain.model.Alarm
 import com.tungnk123.soundalarm.domain.model.DayOfWeek
 import com.tungnk123.soundalarm.domain.snooze.SnoozeManager
@@ -25,10 +24,16 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 import javax.inject.Inject
 
+sealed interface NextAlarmInfo {
+    data class HoursAndMinutes(val hours: Int, val minutes: Int) : NextAlarmInfo
+    data class MinutesOnly(val minutes: Int) : NextAlarmInfo
+    data object Soon : NextAlarmInfo
+}
+
 data class HomeUiState(
     val alarms: List<Alarm> = emptyList(),
     val isLoading: Boolean = true,
-    val nextAlarmText: String? = null,
+    val nextAlarmInfo: NextAlarmInfo? = null,
     val snoozeState: SnoozeState? = null,
 )
 
@@ -48,7 +53,7 @@ class HomeViewModel @Inject constructor(
         HomeUiState(
             alarms = alarms,
             isLoading = false,
-            nextAlarmText = computeNextAlarmText(alarms),
+            nextAlarmInfo = computeNextAlarmInfo(alarms),
             snoozeState = snoozeState,
         )
     }.stateIn(
@@ -79,7 +84,7 @@ class HomeViewModel @Inject constructor(
         context.sendBroadcast(cancelIntent)
     }
 
-    private fun computeNextAlarmText(alarms: List<Alarm>): String? {
+    private fun computeNextAlarmInfo(alarms: List<Alarm>): NextAlarmInfo? {
         val now = Calendar.getInstance()
         var minMillis = Long.MAX_VALUE
 
@@ -126,12 +131,12 @@ class HomeViewModel @Inject constructor(
         }
 
         if (minMillis == Long.MAX_VALUE) return null
-        val hours = minMillis / (1000 * 60 * 60)
-        val minutes = (minMillis % (1000 * 60 * 60)) / (1000 * 60)
+        val hours = (minMillis / (1000 * 60 * 60)).toInt()
+        val minutes = ((minMillis % (1000 * 60 * 60)) / (1000 * 60)).toInt()
         return when {
-            hours > 0 -> context.getString(R.string.message_next_alarm_hours, hours.toInt(), minutes.toInt())
-            minutes > 0 -> context.getString(R.string.message_next_alarm_minutes, minutes.toInt())
-            else -> context.getString(R.string.message_next_alarm_soon)
+            hours > 0 -> NextAlarmInfo.HoursAndMinutes(hours, minutes)
+            minutes > 0 -> NextAlarmInfo.MinutesOnly(minutes)
+            else -> NextAlarmInfo.Soon
         }
     }
 }

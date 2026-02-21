@@ -40,11 +40,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.tungnk123.soundalarm.R
 import kotlinx.coroutines.delay
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -173,7 +175,7 @@ fun AlarmTriggerScreen(
                 }
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
-                    text = "Snooze 10 min",
+                    text = stringResource(R.string.trigger_snooze_button),
                     color = Color.White.copy(alpha = 0.7f),
                     fontSize = 12.sp,
                 )
@@ -220,7 +222,8 @@ fun AlarmTriggerScreen(
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = if (swipeProgress >= 0.8f) "Release to stop" else "Swipe up to stop",
+                    text = if (swipeProgress >= 0.8f) stringResource(R.string.trigger_release_to_stop)
+                    else stringResource(R.string.trigger_swipe_to_stop),
                     color = stopColor,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
