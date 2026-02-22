@@ -57,9 +57,6 @@ fun MainScreen() {
             }
         },
     ) { innerPadding ->
-        // Only apply bottom padding so each screen's TopAppBar can extend
-        // naturally into the status bar area (seamless colour match).
-        // The bottom inset is consumed so inner Scaffolds don't double-count it.
         val bottomPadding = innerPadding.calculateBottomPadding()
         NavGraph(
             navController = navController,

@@ -26,7 +26,6 @@ fun NavGraph(
         startDestination = Screen.Home.route,
         modifier = modifier,
     ) {
-        // ── Bottom nav tabs ──────────────────────────────────────────────────
         composable(Screen.Home.route) {
             HomeScreen(
                 onNavigateToAlarmDetail = { alarmId ->
@@ -63,7 +62,6 @@ fun NavGraph(
             SettingsScreen()
         }
 
-        // ── Sub-screens (push/pop) ───────────────────────────────────────────
         composable(
             route = Screen.AlarmDetail.route,
             arguments = listOf(
