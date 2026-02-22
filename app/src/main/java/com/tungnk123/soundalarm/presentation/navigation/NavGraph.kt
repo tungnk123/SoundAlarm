@@ -8,11 +8,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.tungnk123.soundalarm.presentation.alarm.AlarmDetailScreen
+import com.tungnk123.soundalarm.presentation.challenge.ChallengeScreen
 import com.tungnk123.soundalarm.presentation.home.HomeScreen
 import com.tungnk123.soundalarm.presentation.music.MusicSelectionScreen
 import com.tungnk123.soundalarm.presentation.playlist.PlaylistGroupsScreen
 import com.tungnk123.soundalarm.presentation.playlist.PlaylistScreen
 import com.tungnk123.soundalarm.presentation.settings.SettingsScreen
+import com.tungnk123.soundalarm.presentation.statistics.StatisticsScreen
 
 @Composable
 fun NavGraph(
@@ -24,22 +26,44 @@ fun NavGraph(
         startDestination = Screen.Home.route,
         modifier = modifier,
     ) {
+        // ── Bottom nav tabs ──────────────────────────────────────────────────
         composable(Screen.Home.route) {
             HomeScreen(
                 onNavigateToAlarmDetail = { alarmId ->
                     navController.navigate(Screen.AlarmDetail.createRoute(alarmId))
                 },
-                onNavigateToSettings = {
-                    navController.navigate(Screen.Settings.route)
-                },
-                onNavigateToMusicSelection = {
-                    navController.navigate(Screen.PlaylistGroups.route)
-                },
                 onNavigateToNewAlarm = {
                     navController.navigate(Screen.AlarmDetail.createRoute(0L))
                 },
+                onNavigateToSounds = {
+                    navController.navigate(Screen.Sounds.route) {
+                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
             )
         }
+        composable(Screen.Sounds.route) {
+            PlaylistGroupsScreen(
+                onNavigateBack = {},
+                showBackButton = false,
+                onNavigateToPlaylistDetail = { playlistGroupId ->
+                    navController.navigate(Screen.PlaylistDetail.createRoute(playlistGroupId))
+                },
+            )
+        }
+        composable(Screen.Challenge.route) {
+            ChallengeScreen()
+        }
+        composable(Screen.Statistics.route) {
+            StatisticsScreen()
+        }
+        composable(Screen.Settings.route) {
+            SettingsScreen()
+        }
+
+        // ── Sub-screens (push/pop) ───────────────────────────────────────────
         composable(
             route = Screen.AlarmDetail.route,
             arguments = listOf(
@@ -49,11 +73,6 @@ fun NavGraph(
             AlarmDetailScreen(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToPlaylist = { navController.navigate(Screen.PlaylistGroups.route) },
-            )
-        }
-        composable(Screen.Settings.route) {
-            SettingsScreen(
-                onNavigateBack = { navController.popBackStack() },
             )
         }
         composable(

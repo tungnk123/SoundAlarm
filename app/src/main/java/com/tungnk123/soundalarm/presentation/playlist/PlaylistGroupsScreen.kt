@@ -60,6 +60,7 @@ import com.tungnk123.soundalarm.domain.model.PlaylistGroup
 fun PlaylistGroupsScreen(
     onNavigateBack: () -> Unit,
     onNavigateToPlaylistDetail: (Long) -> Unit,
+    showBackButton: Boolean = true,
     viewModel: PlaylistGroupsViewModel = hiltViewModel(),
 ) {
     val playlistGroups by viewModel.playlistGroups.collectAsStateWithLifecycle()
@@ -128,15 +129,18 @@ fun PlaylistGroupsScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.title_playlists)) },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.cd_back),
-                        )
+                    if (showBackButton) {
+                        IconButton(onClick = onNavigateBack) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.cd_back),
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 ),
             )
         },

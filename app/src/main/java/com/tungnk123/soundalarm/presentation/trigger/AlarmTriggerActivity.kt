@@ -34,16 +34,8 @@ class AlarmTriggerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-            setShowWhenLocked(true)
-            setTurnScreenOn(true)
-        } else {
-            @Suppress("DEPRECATION")
-            window.addFlags(
-                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-                    WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON,
-            )
-        }
+        setShowWhenLocked(true)
+        setTurnScreenOn(true)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         val alarmLabel = intent?.getStringExtra(AlarmService.EXTRA_ALARM_LABEL) ?: "Alarm"
@@ -53,7 +45,7 @@ class AlarmTriggerActivity : ComponentActivity() {
 
         val filter = IntentFilter(AlarmService.ACTION_ALARM_STOPPED)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(alarmStoppedReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+            registerReceiver(alarmStoppedReceiver, filter, RECEIVER_NOT_EXPORTED)
         } else {
             registerReceiver(alarmStoppedReceiver, filter)
         }
