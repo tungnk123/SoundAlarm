@@ -15,8 +15,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.navigation.compose.rememberNavController
-import com.tungnk123.soundalarm.presentation.navigation.NavGraph
+import com.tungnk123.soundalarm.presentation.MainScreen
 import com.tungnk123.soundalarm.ui.theme.SoundAlarmTheme
 import com.tungnk123.soundalarm.util.LocaleManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,8 +36,7 @@ class MainActivity : ComponentActivity() {
         requestPostNotificationsPermission()
         setContent {
             SoundAlarmTheme {
-                val navController = rememberNavController()
-                NavGraph(navController = navController)
+                MainScreen()
             }
         }
     }

@@ -17,20 +17,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessAlarm
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material.icons.filled.MusicNote
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Snooze
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -42,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tungnk123.soundalarm.R
@@ -53,9 +48,8 @@ import com.tungnk123.soundalarm.presentation.home.components.SnoozeBannerCard
 @Composable
 fun HomeScreen(
     onNavigateToAlarmDetail: (Long) -> Unit,
-    onNavigateToSettings: () -> Unit,
-    onNavigateToMusicSelection: () -> Unit,
     onNavigateToNewAlarm: () -> Unit,
+    onNavigateToSounds: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -68,14 +62,6 @@ fun HomeScreen(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 ),
-                actions = {
-                    IconButton(onClick = onNavigateToMusicSelection) {
-                        Icon(Icons.Default.MusicNote, contentDescription = stringResource(R.string.cd_music_selection))
-                    }
-                    IconButton(onClick = onNavigateToSettings) {
-                        Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.cd_settings))
-                    }
-                },
             )
         },
         floatingActionButton = {
@@ -95,7 +81,7 @@ fun HomeScreen(
                 }
                 uiState.alarms.isEmpty() && uiState.snoozeState == null -> {
                     EmptyStateTutorial(
-                        onNavigateToMusicSelection = onNavigateToMusicSelection,
+                        onNavigateToMusicSelection = onNavigateToSounds,
                         modifier = Modifier
                             .align(Alignment.Center)
                             .padding(32.dp),
