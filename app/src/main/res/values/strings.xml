@@ -25,8 +25,13 @@
     <!-- Home Screen -->
     <string name="message_no_alarms">No alarms set</string>
     <string name="message_tap_add_alarm">Tap + to add your first alarm</string>
+    <string name="message_next_alarm_days_hours">Next alarm in %1$s %2$s</string>
     <string name="message_next_alarm_hours_minutes">Next alarm in %1$s %2$s</string>
     <string name="message_next_alarm_soon">Alarm ringing soon</string>
+    <plurals name="next_alarm_days_part">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
     <plurals name="next_alarm_hours_part">
         <item quantity="one">%d hour</item>
         <item quantity="other">%d hours</item>

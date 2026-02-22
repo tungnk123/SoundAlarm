@@ -118,6 +118,11 @@ fun HomeScreen(
                                 )
                             }
                             val nextAlarmText = when (val info = uiState.nextAlarmInfo) {
+                                is NextAlarmInfo.DaysAndHours -> {
+                                    val daysPart = pluralStringResource(R.plurals.next_alarm_days_part, info.days, info.days)
+                                    val hoursPart = pluralStringResource(R.plurals.next_alarm_hours_part, info.hours, info.hours)
+                                    stringResource(R.string.message_next_alarm_days_hours, daysPart, hoursPart)
+                                }
                                 is NextAlarmInfo.HoursAndMinutes -> {
                                     val hoursPart = pluralStringResource(R.plurals.next_alarm_hours_part, info.hours, info.hours)
                                     val minutesPart = pluralStringResource(R.plurals.next_alarm_minutes_part, info.minutes, info.minutes)

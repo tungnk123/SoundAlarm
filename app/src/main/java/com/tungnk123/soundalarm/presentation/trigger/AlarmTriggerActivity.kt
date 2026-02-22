@@ -1,5 +1,6 @@
 package com.tungnk123.soundalarm.presentation.trigger
 
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -9,12 +10,17 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tungnk123.soundalarm.presentation.service.AlarmService
 import com.tungnk123.soundalarm.ui.theme.SoundAlarmTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AlarmTriggerActivity : ComponentActivity() {
+
+    private val viewModel: AlarmTriggerViewModel by viewModels()
 
     private val alarmStoppedReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -24,6 +30,7 @@ class AlarmTriggerActivity : ComponentActivity() {
         }
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -42,6 +49,8 @@ class AlarmTriggerActivity : ComponentActivity() {
         val alarmLabel = intent?.getStringExtra(AlarmService.EXTRA_ALARM_LABEL) ?: "Alarm"
         val alarmId = intent?.getLongExtra(AlarmService.EXTRA_ALARM_ID, -1L) ?: -1L
 
+        viewModel.loadNextAlarm(excludeAlarmId = alarmId)
+
         val filter = IntentFilter(AlarmService.ACTION_ALARM_STOPPED)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(alarmStoppedReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
@@ -51,8 +60,10 @@ class AlarmTriggerActivity : ComponentActivity() {
 
         setContent {
             SoundAlarmTheme {
+                val nextAlarmText by viewModel.nextAlarmText.collectAsStateWithLifecycle()
                 AlarmTriggerScreen(
                     alarmLabel = alarmLabel,
+                    nextAlarmText = nextAlarmText,
                     onStop = { stopAlarm() },
                     onSnooze = { snoozeAlarm(alarmId, alarmLabel) },
                 )

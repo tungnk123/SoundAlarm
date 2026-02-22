@@ -20,13 +20,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width        // Base dark layer
+import androidx.compose.foundation.layout.width
 
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Label
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Snooze
 import androidx.compose.material3.Icon
@@ -66,6 +67,7 @@ import kotlin.math.roundToInt
 @Composable
 fun AlarmTriggerScreen(
     alarmLabel: String,
+    nextAlarmText: String?,
     onStop: () -> Unit,
     onSnooze: () -> Unit,
 ) {
@@ -263,6 +265,28 @@ fun AlarmTriggerScreen(
                             color = Color.White.copy(alpha = 0.88f),
                         )
                     }
+                }
+            }
+
+            if (nextAlarmText != null) {
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Alarm,
+                        contentDescription = null,
+                        tint = Color.White.copy(alpha = 0.45f),
+                        modifier = Modifier.size(13.dp),
+                    )
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text(
+                        text = "Next alarm in $nextAlarmText",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White.copy(alpha = 0.45f),
+                        letterSpacing = 0.3.sp,
+                    )
                 }
             }
 

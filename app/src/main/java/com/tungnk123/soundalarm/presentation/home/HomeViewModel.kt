@@ -25,6 +25,7 @@ import java.util.Calendar
 import javax.inject.Inject
 
 sealed interface NextAlarmInfo {
+    data class DaysAndHours(val days: Int, val hours: Int) : NextAlarmInfo
     data class HoursAndMinutes(val hours: Int, val minutes: Int) : NextAlarmInfo
     data class MinutesOnly(val minutes: Int) : NextAlarmInfo
     data object Soon : NextAlarmInfo
@@ -131,12 +132,17 @@ class HomeViewModel @Inject constructor(
         }
 
         if (minMillis == Long.MAX_VALUE) return null
-        val hours = (minMillis / (1000 * 60 * 60)).toInt()
-        val minutes = ((minMillis % (1000 * 60 * 60)) / (1000 * 60)).toInt()
+
+        val totalSeconds = minMillis / 1_000L
+        val days    = (totalSeconds / 86_400L).toInt()
+        val hours   = ((totalSeconds % 86_400L) / 3_600L).toInt()
+        val minutes = ((totalSeconds % 3_600L) / 60L).toInt()
+
         return when {
-            hours > 0 -> NextAlarmInfo.HoursAndMinutes(hours, minutes)
-            minutes > 0 -> NextAlarmInfo.MinutesOnly(minutes)
-            else -> NextAlarmInfo.Soon
+            days > 0            -> NextAlarmInfo.DaysAndHours(days, hours)
+            hours > 0           -> NextAlarmInfo.HoursAndMinutes(hours, minutes)
+            minutes > 0         -> NextAlarmInfo.MinutesOnly(minutes)
+            else                -> NextAlarmInfo.Soon
         }
     }
 }
