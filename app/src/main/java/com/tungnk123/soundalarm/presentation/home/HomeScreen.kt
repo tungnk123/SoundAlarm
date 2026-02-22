@@ -39,6 +39,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -116,7 +117,22 @@ fun HomeScreen(
                                     onCancelSnooze = { viewModel.cancelSnooze() },
                                 )
                             }
-                            uiState.nextAlarmText?.let { text ->
+                            val nextAlarmText = when (val info = uiState.nextAlarmInfo) {
+                                is NextAlarmInfo.DaysAndHours -> {
+                                    val daysPart = pluralStringResource(R.plurals.next_alarm_days_part, info.days, info.days)
+                                    val hoursPart = pluralStringResource(R.plurals.next_alarm_hours_part, info.hours, info.hours)
+                                    stringResource(R.string.message_next_alarm_days_hours, daysPart, hoursPart)
+                                }
+                                is NextAlarmInfo.HoursAndMinutes -> {
+                                    val hoursPart = pluralStringResource(R.plurals.next_alarm_hours_part, info.hours, info.hours)
+                                    val minutesPart = pluralStringResource(R.plurals.next_alarm_minutes_part, info.minutes, info.minutes)
+                                    stringResource(R.string.message_next_alarm_hours_minutes, hoursPart, minutesPart)
+                                }
+                                is NextAlarmInfo.MinutesOnly -> pluralStringResource(R.plurals.next_alarm_minutes_only, info.minutes, info.minutes)
+                                is NextAlarmInfo.Soon -> stringResource(R.string.message_next_alarm_soon)
+                                null -> null
+                            }
+                            nextAlarmText?.let { text ->
                                 Card(
                                     modifier = Modifier.fillMaxWidth(),
                                     colors = CardDefaults.cardColors(

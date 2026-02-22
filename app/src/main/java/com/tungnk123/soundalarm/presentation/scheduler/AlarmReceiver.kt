@@ -57,7 +57,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
     private fun cancelSnooze(context: Context, intent: Intent) {
         val alarmId = intent.getLongExtra(AlarmService.EXTRA_ALARM_ID, -1L)
-        val alarmLabel = intent.getStringExtra(AlarmService.EXTRA_ALARM_LABEL) ?: "Alarm"
+        val alarmLabel = intent.getStringExtra(AlarmService.EXTRA_ALARM_LABEL) ?: context.getString(R.string.label_alarm_default)
         if (alarmId == -1L) return
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -83,11 +83,11 @@ class AlarmReceiver : BroadcastReceiver() {
     }
 
     private fun showPreAlarmNotification(context: Context, intent: Intent) {
-        val alarmLabel = intent.getStringExtra(AlarmService.EXTRA_ALARM_LABEL) ?: "Alarm"
+        val alarmLabel = intent.getStringExtra(AlarmService.EXTRA_ALARM_LABEL) ?: context.getString(R.string.label_alarm_default)
         val minutesBefore = intent.getIntExtra(EXTRA_MINUTES_BEFORE, 10)
 
         val notificationManager = context.getSystemService(NotificationManager::class.java)
-        ensurePreAlarmChannel(notificationManager)
+        ensurePreAlarmChannel(context, notificationManager)
 
         val notification = NotificationCompat.Builder(context, PRE_ALARM_CHANNEL_ID)
             .setContentTitle(context.getString(R.string.notification_pre_alarm_title))
@@ -102,20 +102,20 @@ class AlarmReceiver : BroadcastReceiver() {
         notificationManager.notify(PRE_ALARM_NOTIFICATION_ID, notification)
     }
 
-    private fun ensurePreAlarmChannel(notificationManager: NotificationManager) {
+    private fun ensurePreAlarmChannel(context: Context, notificationManager: NotificationManager) {
         val channel = NotificationChannel(
             PRE_ALARM_CHANNEL_ID,
-            "Pre-Alarm Reminders",
+            context.getString(R.string.notification_channel_pre_alarm_name),
             NotificationManager.IMPORTANCE_HIGH,
         ).apply {
-            description = "Notifications shown before an alarm rings"
+            description = context.getString(R.string.notification_channel_pre_alarm_desc)
         }
         notificationManager.createNotificationChannel(channel)
     }
 
     private fun handleAlarmFired(context: Context, intent: Intent) {
         val alarmId = intent.getLongExtra(AlarmService.EXTRA_ALARM_ID, -1L)
-        val alarmLabel = intent.getStringExtra(AlarmService.EXTRA_ALARM_LABEL) ?: "Alarm"
+        val alarmLabel = intent.getStringExtra(AlarmService.EXTRA_ALARM_LABEL) ?: context.getString(R.string.label_alarm_default)
 
         if (alarmId == -1L) return
 

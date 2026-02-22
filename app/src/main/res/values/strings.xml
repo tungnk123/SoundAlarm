@@ -25,9 +25,25 @@
     <!-- Home Screen -->
     <string name="message_no_alarms">No alarms set</string>
     <string name="message_tap_add_alarm">Tap + to add your first alarm</string>
-    <string name="message_next_alarm_hours">Next alarm in %1$d hour(s) %2$d minute(s)</string>
-    <string name="message_next_alarm_minutes">Next alarm in %1$d minute(s)</string>
+    <string name="message_next_alarm_days_hours">Next alarm in %1$s %2$s</string>
+    <string name="message_next_alarm_hours_minutes">Next alarm in %1$s %2$s</string>
     <string name="message_next_alarm_soon">Alarm ringing soon</string>
+    <plurals name="next_alarm_days_part">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+    <plurals name="next_alarm_hours_part">
+        <item quantity="one">%d hour</item>
+        <item quantity="other">%d hours</item>
+    </plurals>
+    <plurals name="next_alarm_minutes_part">
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
+    <plurals name="next_alarm_minutes_only">
+        <item quantity="one">Next alarm in %d minute</item>
+        <item quantity="other">Next alarm in %d minutes</item>
+    </plurals>
 
     <!-- Home Screen Tutorial -->
     <string name="tutorial_title">Welcome to Sound Alarm!</string>
@@ -176,5 +192,51 @@
     <string name="label_random_from_playlist">Play from playlist</string>
     <string name="label_all_tracks">All playlists</string>
     <string name="label_select_playlist">Select Playlist</string>
+
+    <!-- Accessibility Settings -->
+    <string name="settings_section_accessibility">Accessibility</string>
+    <string name="settings_read_time_aloud">Read Time Aloud</string>
+    <string name="settings_read_time_aloud_desc">Announce the current time when the alarm fires</string>
+    <string name="settings_announcement_template">Announcement Text</string>
+    <string name="settings_announcement_template_hint">Use {time} as placeholder — e.g. "It is {time}"</string>
+
+    <!-- Custom Voice Settings -->
+    <string name="settings_section_custom_voice">Custom Voice</string>
+    <string name="settings_custom_voice_desc">Import a recorded audio file to play alongside your alarm. Perfect for a personal wake-up message.</string>
+    <string name="settings_custom_voice_pick">Pick Voice File</string>
+    <string name="settings_custom_voice_change">Change Voice File</string>
+    <string name="settings_custom_voice_remove">Remove voice file</string>
+    <string name="settings_custom_voice_before_music">Play voice before music</string>
+    <string name="settings_custom_voice_before_music_desc">Voice message plays first, then music starts after it finishes</string>
+
+    <!-- Language Settings -->
+    <string name="settings_section_language">Language</string>
+    <string name="settings_language">App Language</string>
+    <string name="settings_language_desc">Choose display language</string>
+    <string name="settings_language_en">English</string>
+    <string name="settings_language_vi">Tiếng Việt</string>
+
+    <!-- Notification content (alarm service) -->
+    <string name="notification_alarm_title">Alarm: %s</string>
+    <string name="notification_alarm_content">Tap to view alarm</string>
+    <string name="notification_action_snooze">Snooze</string>
+    <string name="notification_action_stop">Stop</string>
+    <string name="notification_action_cancel_snooze">Cancel Snooze</string>
+
+    <!-- Notification channel names (visible in system settings) -->
+    <string name="notification_channel_alarm_name">Alarm Channel</string>
+    <string name="notification_channel_alarm_desc">Channel for Alarm Notifications</string>
+    <string name="notification_channel_snooze_name">Snoozed Alarms</string>
+    <string name="notification_channel_snooze_desc">Shows active snoozed alarms</string>
+    <string name="notification_channel_pre_alarm_name">Pre-Alarm Reminders</string>
+    <string name="notification_channel_pre_alarm_desc">Notifications shown before an alarm rings</string>
+
+    <!-- Alarm trigger screen -->
+    <string name="trigger_snooze_button">Snooze 10 min</string>
+    <string name="trigger_swipe_to_stop">Swipe up to stop</string>
+    <string name="trigger_release_to_stop">Release to stop</string>
+
+    <!-- Fallback alarm label -->
+    <string name="label_alarm_default">Alarm</string>
 </resources>
 
