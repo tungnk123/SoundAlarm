@@ -238,5 +238,35 @@
 
     <!-- Fallback alarm label -->
     <string name="label_alarm_default">Alarm</string>
+
+    <!-- Challenge Screen -->
+    <string name="title_challenge">Challenge</string>
+    <string name="challenge_screen_description">Configure how you dismiss alarms. These settings apply globally to all alarms with the matching dismiss method.</string>
+
+    <!-- Challenge Cards -->
+    <string name="challenge_math_title">Math Challenge</string>
+    <string name="challenge_math_description">Solve math problems to dismiss or snooze the alarm</string>
+    <string name="challenge_shake_title">Shake Challenge</string>
+    <string name="challenge_shake_description">Shake your phone the required number of times to dismiss</string>
+    <string name="challenge_walk_title">Walk Challenge</string>
+    <string name="challenge_walk_description">Walk the required number of steps to dismiss</string>
+
+    <!-- Challenge Settings Labels -->
+    <string name="challenge_label_difficulty">Difficulty</string>
+    <string name="challenge_label_problem_count">Number of problems</string>
+    <string name="challenge_label_shake_count">Shake count</string>
+    <string name="challenge_label_step_goal">Step goal</string>
+
+    <!-- Challenge Test Dialog -->
+    <string name="challenge_test_math_title">Test: Math Challenge</string>
+    <string name="challenge_test_shake_title">Test: Shake Challenge</string>
+    <string name="challenge_test_walk_title">Test: Walk Challenge</string>
+    <string name="cd_close">Close</string>
+    <string name="button_test">Test</string>
+
+    <!-- Challenge Success -->
+    <string name="challenge_success_title">Challenge Passed!</string>
+    <string name="challenge_success_subtitle">You\'ve successfully completed the challenge.</string>
+    <string name="button_done">Done</string>
 </resources>
 

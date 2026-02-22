@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tungnk123.soundalarm.domain.model.Alarm
 import com.tungnk123.soundalarm.domain.model.DayOfWeek
+import com.tungnk123.soundalarm.domain.model.DismissMethod
 import com.tungnk123.soundalarm.domain.model.MusicTrack
 import com.tungnk123.soundalarm.domain.model.PlaylistGroup
 import com.tungnk123.soundalarm.domain.model.TrackSelection
@@ -45,6 +46,7 @@ data class AlarmDetailUiState(
     val fadeInDuration: Int = 0,
     val playlistGroupId: Long = 0,
     val availablePlaylistGroups: List<PlaylistGroup> = emptyList(),
+    val dismissMethod: DismissMethod = DismissMethod.NONE,
 )
 
 @HiltViewModel
@@ -106,6 +108,7 @@ class AlarmDetailViewModel @Inject constructor(
                         volume = alarm.volume,
                         fadeInDuration = alarm.fadeInDuration,
                         playlistGroupId = alarm.playlistGroupId,
+                        dismissMethod = alarm.dismissMethod,
                     )
                 }
             }
@@ -187,6 +190,10 @@ class AlarmDetailViewModel @Inject constructor(
         _uiState.update { it.copy(fadeInDuration = seconds) }
     }
 
+    fun updateDismissMethod(method: DismissMethod) {
+        _uiState.update { it.copy(dismissMethod = method) }
+    }
+
     fun updatePlaylistGroup(playlistGroupId: Long) {
         _uiState.update { it.copy(playlistGroupId = playlistGroupId) }
     }
@@ -235,6 +242,7 @@ class AlarmDetailViewModel @Inject constructor(
                 volume = state.volume,
                 fadeInDuration = state.fadeInDuration,
                 playlistGroupId = state.playlistGroupId,
+                dismissMethod = state.dismissMethod,
             )
             val savedId = saveAlarmUseCase(alarm)
 

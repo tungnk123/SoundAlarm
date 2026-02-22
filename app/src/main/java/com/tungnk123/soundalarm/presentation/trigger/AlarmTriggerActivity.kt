@@ -41,6 +41,7 @@ class AlarmTriggerActivity : ComponentActivity() {
         val alarmLabel = intent?.getStringExtra(AlarmService.EXTRA_ALARM_LABEL) ?: "Alarm"
         val alarmId = intent?.getLongExtra(AlarmService.EXTRA_ALARM_ID, -1L) ?: -1L
 
+        viewModel.loadAlarm(alarmId)
         viewModel.loadNextAlarm(excludeAlarmId = alarmId)
 
         val filter = IntentFilter(AlarmService.ACTION_ALARM_STOPPED)
@@ -53,9 +54,11 @@ class AlarmTriggerActivity : ComponentActivity() {
         setContent {
             SoundAlarmTheme {
                 val nextAlarmText by viewModel.nextAlarmText.collectAsStateWithLifecycle()
+                val challengeConfig by viewModel.challengeConfig.collectAsStateWithLifecycle()
                 AlarmTriggerScreen(
                     alarmLabel = alarmLabel,
                     nextAlarmText = nextAlarmText,
+                    challengeConfig = challengeConfig,
                     onStop = { stopAlarm() },
                     onSnooze = { snoozeAlarm(alarmId, alarmLabel) },
                 )

@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.tungnk123.soundalarm.domain.model.Alarm
 import com.tungnk123.soundalarm.domain.model.DayOfWeek
+import com.tungnk123.soundalarm.domain.model.DismissMethod
 
 @Entity(tableName = "alarms")
 data class AlarmEntity(
@@ -21,6 +22,7 @@ data class AlarmEntity(
     val volume: Float = 1.0f,
     val fadeInDuration: Int = 0,
     val playlistGroupId: Long = 0,
+    val dismissMethod: String = "NONE",
 ) {
     fun toDomain(): Alarm = Alarm(
         id = id,
@@ -39,6 +41,7 @@ data class AlarmEntity(
         volume = volume,
         fadeInDuration = fadeInDuration,
         playlistGroupId = playlistGroupId,
+        dismissMethod = runCatching { DismissMethod.valueOf(dismissMethod) }.getOrDefault(DismissMethod.NONE),
     )
 
     companion object {
@@ -56,6 +59,7 @@ data class AlarmEntity(
             volume = alarm.volume,
             fadeInDuration = alarm.fadeInDuration,
             playlistGroupId = alarm.playlistGroupId,
+            dismissMethod = alarm.dismissMethod.name,
         )
     }
 }

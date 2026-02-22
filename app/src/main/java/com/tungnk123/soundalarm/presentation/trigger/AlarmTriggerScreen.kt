@@ -21,13 +21,12 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Label
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Alarm
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Snooze
 import androidx.compose.material3.Icon
@@ -59,6 +58,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tungnk123.soundalarm.R
+import com.tungnk123.soundalarm.domain.model.DismissMethod
 import kotlinx.coroutines.delay
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -68,6 +68,7 @@ import kotlin.math.roundToInt
 fun AlarmTriggerScreen(
     alarmLabel: String,
     nextAlarmText: String?,
+    challengeConfig: AlarmTriggerViewModel.ChallengeConfig,
     onStop: () -> Unit,
     onSnooze: () -> Unit,
 ) {
@@ -124,6 +125,7 @@ fun AlarmTriggerScreen(
         label = "arrow_pulse",
     )
 
+    // Swipe state — only relevant when dismissMethod == NONE
     var dragOffsetY by remember { mutableFloatStateOf(0f) }
     val density = LocalDensity.current
     val swipeThreshold = remember(density) { with(density) { 150.dp.toPx() } }
@@ -352,49 +354,57 @@ fun AlarmTriggerScreen(
                 }
             }
 
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .padding(bottom = 52.dp)
-                    .offset { IntOffset(0, clampedOffset.roundToInt()) }
-                    .pointerInput(Unit) {
-                        detectVerticalDragGestures(
-                            onDragEnd = {
-                                if (-dragOffsetY >= swipeThreshold) onStop()
-                                dragOffsetY = 0f
+            // Dismiss section — swipe for NONE, challenge overlay for other methods
+            when (challengeConfig.dismissMethod) {
+                DismissMethod.NONE -> {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .padding(bottom = 52.dp)
+                            .offset { IntOffset(0, clampedOffset.roundToInt()) }
+                            .pointerInput(Unit) {
+                                detectVerticalDragGestures(
+                                    onDragEnd = {
+                                        if (-dragOffsetY >= swipeThreshold) onStop()
+                                        dragOffsetY = 0f
+                                    },
+                                    onDragCancel = { dragOffsetY = 0f },
+                                    onVerticalDrag = { _, dragAmount ->
+                                        dragOffsetY = (dragOffsetY + dragAmount).coerceAtMost(0f)
+                                    },
+                                )
                             },
-                            onDragCancel = { dragOffsetY = 0f },
-                            onVerticalDrag = { _, dragAmount ->
-                                dragOffsetY = (dragOffsetY + dragAmount).coerceAtMost(0f)
-                            },
-                        )
-                    },
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy((-10).dp),
-                ) {
-                    repeat(3) { i ->
-                        val baseAlpha = 1f - i * 0.28f
-                        Icon(
-                            imageVector = Icons.Filled.KeyboardArrowUp,
-                            contentDescription = null,
-                            tint = stopColor.copy(
-                                alpha = if (swipeProgress > 0.05f) baseAlpha
-                                else (arrowPulse * baseAlpha).coerceIn(0f, 1f),
-                            ),
-                            modifier = Modifier.size(34.dp),
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy((-10).dp),
+                        ) {
+                            repeat(3) { i ->
+                                val baseAlpha = 1f - i * 0.28f
+                                Icon(
+                                    imageVector = Icons.Filled.KeyboardArrowUp,
+                                    contentDescription = null,
+                                    tint = stopColor.copy(
+                                        alpha = if (swipeProgress > 0.05f) baseAlpha
+                                        else (arrowPulse * baseAlpha).coerceIn(0f, 1f),
+                                    ),
+                                    modifier = Modifier.size(34.dp),
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = if (swipeProgress >= 0.8f) stringResource(R.string.trigger_release_to_stop)
+                            else stringResource(R.string.trigger_swipe_to_stop),
+                            color = stopColor,
+                            style = MaterialTheme.typography.labelLarge,
+                            letterSpacing = 1.sp,
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = if (swipeProgress >= 0.8f) stringResource(R.string.trigger_release_to_stop)
-                    else stringResource(R.string.trigger_swipe_to_stop),
-                    color = stopColor,
-                    style = MaterialTheme.typography.labelLarge,
-                    letterSpacing = 1.sp,
-                )
+                DismissMethod.MATH -> MathChallengeSection(config = challengeConfig, onSolved = onStop)
+                DismissMethod.SHAKE -> ShakeChallengeSection(config = challengeConfig, onSolved = onStop)
+                DismissMethod.WALK -> WalkChallengeSection(config = challengeConfig, onSolved = onStop)
             }
         }
     }

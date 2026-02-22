@@ -62,6 +62,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tungnk123.soundalarm.R
 import com.tungnk123.soundalarm.domain.model.AlarmDayTrack
 import com.tungnk123.soundalarm.domain.model.DayOfWeek
+import com.tungnk123.soundalarm.presentation.alarm.components.DismissMethodCard
 import com.tungnk123.soundalarm.presentation.alarm.components.MusicSelectionCard
 import com.tungnk123.soundalarm.presentation.alarm.components.ScheduleCard
 import com.tungnk123.soundalarm.presentation.alarm.components.SoundSettingsCard
@@ -435,6 +436,11 @@ fun AlarmDetailScreen(
                 onSetOneTime = viewModel::setOneTime,
                 onToggleVibrate = { viewModel.toggleVibrate() },
                 onToggleDeleteAfterFired = { viewModel.toggleDeleteAfterFired() },
+            )
+
+            DismissMethodCard(
+                dismissMethod = uiState.dismissMethod,
+                onSelectDismissMethod = viewModel::updateDismissMethod,
             )
 
             MusicSelectionCard(
