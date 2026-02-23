@@ -5,6 +5,7 @@ enum class DismissMethod {
     MATH,
     SHAKE,
     WALK,
+    MEMORY,
 }
 
 enum class MathDifficulty {

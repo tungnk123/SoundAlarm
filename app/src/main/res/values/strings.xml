@@ -268,5 +268,11 @@
     <string name="challenge_success_title">Challenge Passed!</string>
     <string name="challenge_success_subtitle">You\'ve successfully completed the challenge.</string>
     <string name="button_done">Done</string>
+
+    <!-- Memory Challenge -->
+    <string name="challenge_memory_title">Memory Challenge</string>
+    <string name="challenge_memory_description">Memorize a digit code shown briefly, then type it from memory to dismiss</string>
+    <string name="challenge_label_code_length">Code length</string>
+    <string name="challenge_test_memory_title">Test: Memory Challenge</string>
 </resources>
 

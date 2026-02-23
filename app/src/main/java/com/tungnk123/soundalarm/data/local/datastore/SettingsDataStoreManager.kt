@@ -118,6 +118,10 @@ class SettingsDataStoreManager @Inject constructor(
         dataStore.edit { it[Keys.WALK_STEP_GOAL] = steps }
     }
 
+    suspend fun updateMemoryCodeLength(length: Int) {
+        dataStore.edit { it[Keys.MEMORY_CODE_LENGTH] = length }
+    }
+
     private fun Preferences.toAppSettings() = AppSettings(
         snoozeCount = this[Keys.SNOOZE_COUNT] ?: AppSettings.DEFAULT_SNOOZE_COUNT,
         alarmDuration = this[Keys.ALARM_DURATION] ?: AppSettings.DEFAULT_ALARM_DURATION,
@@ -138,6 +142,7 @@ class SettingsDataStoreManager @Inject constructor(
         mathProblemCount = this[Keys.MATH_PROBLEM_COUNT] ?: AppSettings.DEFAULT_MATH_PROBLEM_COUNT,
         shakeCount = this[Keys.SHAKE_COUNT] ?: AppSettings.DEFAULT_SHAKE_COUNT,
         walkStepGoal = this[Keys.WALK_STEP_GOAL] ?: AppSettings.DEFAULT_WALK_STEP_GOAL,
+        memoryCodeLength = this[Keys.MEMORY_CODE_LENGTH] ?: AppSettings.DEFAULT_MEMORY_CODE_LENGTH,
     )
 
     object Keys {
@@ -159,5 +164,6 @@ class SettingsDataStoreManager @Inject constructor(
         val MATH_PROBLEM_COUNT = intPreferencesKey("math_problem_count")
         val SHAKE_COUNT = intPreferencesKey("shake_count")
         val WALK_STEP_GOAL = intPreferencesKey("walk_step_goal")
+        val MEMORY_CODE_LENGTH = intPreferencesKey("memory_code_length")
     }
 }

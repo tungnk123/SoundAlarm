@@ -10,6 +10,10 @@ import android.hardware.SensorManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,15 +27,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsWalk
+import androidx.compose.material.icons.filled.Memory
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +54,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.tungnk123.soundalarm.domain.model.MathDifficulty
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
@@ -400,6 +408,182 @@ fun WalkChallengeSection(
                     modifier = Modifier.padding(horizontal = 32.dp, vertical = 12.dp),
                     fontWeight = FontWeight.Medium,
                 )
+            }
+        }
+    }
+}
+
+// ─── Memory ──────────────────────────────────────────────────────────────────
+
+private enum class MemoryPhase { SHOWING, TYPING }
+
+private const val MEMORY_SHOW_SECONDS = 4
+
+@Composable
+fun MemoryChallengeSection(
+    config: AlarmTriggerViewModel.ChallengeConfig,
+    onSolved: () -> Unit,
+) {
+    val secretCode = remember {
+        (0 until config.memoryCodeLength.coerceAtLeast(4)).map { (0..9).random() }.joinToString("")
+    }
+    var phase by remember { mutableStateOf(MemoryPhase.SHOWING) }
+    var countdown by remember { mutableIntStateOf(MEMORY_SHOW_SECONDS) }
+    var progress by remember { mutableFloatStateOf(1f) }
+    var userInput by remember { mutableStateOf("") }
+    var isWrong by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        val totalMs = MEMORY_SHOW_SECONDS * 1000L
+        val tickMs = 50L
+        var elapsed = 0L
+        while (elapsed < totalMs) {
+            delay(tickMs)
+            elapsed += tickMs
+            progress = 1f - (elapsed.toFloat() / totalMs)
+            countdown = ((totalMs - elapsed) / 1000L + 1).toInt().coerceAtLeast(1)
+        }
+        phase = MemoryPhase.TYPING
+    }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 40.dp)
+            .background(Color.White.copy(alpha = 0.07f), RoundedCornerShape(24.dp))
+            .padding(horizontal = 16.dp, vertical = 20.dp),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Icon(
+                imageVector = Icons.Default.Memory,
+                contentDescription = null,
+                tint = Color(0xFFE879F9),
+                modifier = Modifier.size(18.dp),
+            )
+            Text(
+                text = if (phase == MemoryPhase.SHOWING) "Memorize this code" else "Type the code from memory",
+                color = Color.White.copy(alpha = 0.7f),
+                style = MaterialTheme.typography.labelMedium,
+                textAlign = TextAlign.Center,
+            )
+        }
+
+        AnimatedContent(
+            targetState = phase,
+            transitionSpec = { fadeIn() togetherWith fadeOut() },
+            label = "memory_phase",
+        ) { currentPhase ->
+            if (currentPhase == MemoryPhase.SHOWING) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    Text(
+                        text = secretCode,
+                        fontSize = 52.sp,
+                        fontWeight = FontWeight.Light,
+                        color = Color(0xFFE879F9),
+                        letterSpacing = 8.sp,
+                        textAlign = TextAlign.Center,
+                    )
+                    LinearProgressIndicator(
+                        progress = { progress },
+                        modifier = Modifier.fillMaxWidth(),
+                        color = Color(0xFFE879F9),
+                        trackColor = Color.White.copy(alpha = 0.15f),
+                    )
+                    Text(
+                        text = "Hiding in $countdown…",
+                        color = Color.White.copy(alpha = 0.5f),
+                        style = MaterialTheme.typography.labelSmall,
+                    )
+                }
+            } else {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                if (isWrong) Color(0xFFFF4757).copy(alpha = 0.22f)
+                                else Color.White.copy(alpha = 0.1f),
+                                RoundedCornerShape(14.dp),
+                            )
+                            .padding(horizontal = 20.dp, vertical = 10.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = userInput.ifEmpty { "?" },
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = when {
+                                isWrong -> Color(0xFFFF4757)
+                                userInput.isEmpty() -> Color.White.copy(alpha = 0.3f)
+                                else -> Color.White
+                            },
+                            letterSpacing = 6.sp,
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+
+                    if (isWrong) {
+                        Text(
+                            text = "Wrong code — try again",
+                            color = Color(0xFFFF4757).copy(alpha = 0.85f),
+                            style = MaterialTheme.typography.labelSmall,
+                        )
+                    }
+
+                    val keys = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "⌫", "0", "✓")
+                    keys.chunked(3).forEach { row ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            row.forEach { key ->
+                                Surface(
+                                    onClick = {
+                                        when (key) {
+                                            "⌫" -> { isWrong = false; userInput = userInput.dropLast(1) }
+                                            "✓" -> if (userInput.isNotEmpty()) {
+                                                if (userInput == secretCode) {
+                                                    onSolved()
+                                                } else {
+                                                    isWrong = true; userInput = ""
+                                                }
+                                            }
+                                            else -> if (userInput.length < config.memoryCodeLength) {
+                                                isWrong = false; userInput += key
+                                            }
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(50.dp),
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = if (key == "✓") Color(0xFFE879F9).copy(alpha = 0.6f)
+                                    else Color.White.copy(alpha = 0.12f),
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Text(
+                                            text = key,
+                                            fontSize = 20.sp,
+                                            fontWeight = FontWeight.Medium,
+                                            color = Color.White,
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

@@ -39,4 +39,8 @@ class ChallengeViewModel @Inject constructor(
     fun updateWalkStepGoal(steps: Int) {
         viewModelScope.launch { settingsRepository.updateWalkStepGoal(steps) }
     }
+
+    fun updateMemoryCodeLength(length: Int) {
+        viewModelScope.launch { settingsRepository.updateMemoryCodeLength(length) }
+    }
 }

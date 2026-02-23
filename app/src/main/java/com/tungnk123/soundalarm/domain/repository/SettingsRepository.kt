@@ -24,4 +24,5 @@ interface SettingsRepository {
     suspend fun updateMathProblemCount(count: Int)
     suspend fun updateShakeCount(count: Int)
     suspend fun updateWalkStepGoal(steps: Int)
+    suspend fun updateMemoryCodeLength(length: Int)
 }

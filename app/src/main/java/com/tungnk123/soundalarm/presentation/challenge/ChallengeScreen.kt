@@ -28,6 +28,7 @@ import com.tungnk123.soundalarm.R
 import com.tungnk123.soundalarm.domain.model.DismissMethod
 import com.tungnk123.soundalarm.presentation.challenge.components.ChallengeTestDialog
 import com.tungnk123.soundalarm.presentation.challenge.components.MathChallengeCard
+import com.tungnk123.soundalarm.presentation.challenge.components.MemoryChallengeCard
 import com.tungnk123.soundalarm.presentation.challenge.components.ShakeChallengeCard
 import com.tungnk123.soundalarm.presentation.challenge.components.WalkChallengeCard
 import com.tungnk123.soundalarm.presentation.trigger.AlarmTriggerViewModel
@@ -82,6 +83,12 @@ fun ChallengeScreen(viewModel: ChallengeViewModel = hiltViewModel()) {
                 onTestClick = { testingChallenge = DismissMethod.WALK },
             )
 
+            MemoryChallengeCard(
+                memoryCodeLength = settings.memoryCodeLength,
+                onCodeLengthSelected = viewModel::updateMemoryCodeLength,
+                onTestClick = { testingChallenge = DismissMethod.MEMORY },
+            )
+
             Spacer(Modifier.height(16.dp))
         }
     }
@@ -93,6 +100,7 @@ fun ChallengeScreen(viewModel: ChallengeViewModel = hiltViewModel()) {
             mathProblemCount = settings.mathProblemCount,
             shakeCount = settings.shakeCount,
             walkStepGoal = settings.walkStepGoal,
+            memoryCodeLength = settings.memoryCodeLength,
         )
         ChallengeTestDialog(
             method = method,

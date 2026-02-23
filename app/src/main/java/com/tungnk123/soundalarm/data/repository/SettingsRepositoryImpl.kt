@@ -59,4 +59,6 @@ class SettingsRepositoryImpl @Inject constructor(
     override suspend fun updateShakeCount(count: Int) = manager.updateShakeCount(count)
 
     override suspend fun updateWalkStepGoal(steps: Int) = manager.updateWalkStepGoal(steps)
+
+    override suspend fun updateMemoryCodeLength(length: Int) = manager.updateMemoryCodeLength(length)
 }

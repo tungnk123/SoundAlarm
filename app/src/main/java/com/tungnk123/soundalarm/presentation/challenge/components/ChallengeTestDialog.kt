@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.weight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
@@ -19,7 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment    
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -32,6 +31,7 @@ import com.tungnk123.soundalarm.R
 import com.tungnk123.soundalarm.domain.model.DismissMethod
 import com.tungnk123.soundalarm.presentation.trigger.AlarmTriggerViewModel
 import com.tungnk123.soundalarm.presentation.trigger.MathChallengeSection
+import com.tungnk123.soundalarm.presentation.trigger.MemoryChallengeSection
 import com.tungnk123.soundalarm.presentation.trigger.ShakeChallengeSection
 import com.tungnk123.soundalarm.presentation.trigger.WalkChallengeSection
 
@@ -80,6 +80,7 @@ fun ChallengeTestDialog(
                                 DismissMethod.MATH -> R.string.challenge_test_math_title
                                 DismissMethod.SHAKE -> R.string.challenge_test_shake_title
                                 DismissMethod.WALK -> R.string.challenge_test_walk_title
+                                DismissMethod.MEMORY -> R.string.challenge_test_memory_title
                                 DismissMethod.NONE -> R.string.app_name
                             },
                         ),
@@ -109,6 +110,10 @@ fun ChallengeTestDialog(
                                 onSolved = { solved = true },
                             )
                             DismissMethod.WALK -> WalkChallengeSection(
+                                config = config,
+                                onSolved = { solved = true },
+                            )
+                            DismissMethod.MEMORY -> MemoryChallengeSection(
                                 config = config,
                                 onSolved = { solved = true },
                             )

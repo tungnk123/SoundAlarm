@@ -64,6 +64,24 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
 
+private val alarmQuotes = listOf(
+    "Rise and shine — today is full of possibilities.",
+    "Every morning is a fresh start. Make it count.",
+    "You have exactly one chance to live today. Use it.",
+    "The secret of getting ahead is getting started.",
+    "Don't watch the clock; do what it does. Keep going.",
+    "Wake up with determination. Go to bed with satisfaction.",
+    "Your only limit is your mind.",
+    "Small steps every day lead to big results.",
+    "Today's actions are tomorrow's results.",
+    "Be so good they can't ignore you.",
+    "The early bird gets the worm — and the quiet morning.",
+    "You are stronger than you think.",
+    "One day or day one — you decide.",
+    "Good things come to those who hustle.",
+    "Progress, not perfection.",
+)
+
 @Composable
 fun AlarmTriggerScreen(
     alarmLabel: String,
@@ -72,6 +90,7 @@ fun AlarmTriggerScreen(
     onStop: () -> Unit,
     onSnooze: () -> Unit,
 ) {
+    val quote = remember { alarmQuotes.random() }
     var now by remember { mutableStateOf(LocalDateTime.now()) }
     val timeFormatter = remember { DateTimeFormatter.ofPattern("HH:mm") }
     val dateFormatter = remember { DateTimeFormatter.ofPattern("EEEE, d MMMM") }
@@ -292,6 +311,17 @@ fun AlarmTriggerScreen(
                 }
             }
 
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Text(
+                text = "\u201C$quote\u201D",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.White.copy(alpha = 0.55f),
+                textAlign = TextAlign.Center,
+                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
+                modifier = Modifier.padding(horizontal = 8.dp),
+            )
+
             Spacer(modifier = Modifier.weight(1f))
 
             Box(
@@ -405,6 +435,7 @@ fun AlarmTriggerScreen(
                 DismissMethod.MATH -> MathChallengeSection(config = challengeConfig, onSolved = onStop)
                 DismissMethod.SHAKE -> ShakeChallengeSection(config = challengeConfig, onSolved = onStop)
                 DismissMethod.WALK -> WalkChallengeSection(config = challengeConfig, onSolved = onStop)
+                DismissMethod.MEMORY -> MemoryChallengeSection(config = challengeConfig, onSolved = onStop)
             }
         }
     }

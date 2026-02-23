@@ -29,6 +29,7 @@ class AlarmTriggerViewModel @Inject constructor(
         val mathProblemCount: Int = AppSettings.DEFAULT_MATH_PROBLEM_COUNT,
         val shakeCount: Int = AppSettings.DEFAULT_SHAKE_COUNT,
         val walkStepGoal: Int = AppSettings.DEFAULT_WALK_STEP_GOAL,
+        val memoryCodeLength: Int = AppSettings.DEFAULT_MEMORY_CODE_LENGTH,
     )
 
     private val _nextAlarmText = MutableStateFlow<String?>(null)
@@ -47,6 +48,7 @@ class AlarmTriggerViewModel @Inject constructor(
                 mathProblemCount = settings.mathProblemCount,
                 shakeCount = settings.shakeCount,
                 walkStepGoal = settings.walkStepGoal,
+                memoryCodeLength = settings.memoryCodeLength,
             )
         }
     }

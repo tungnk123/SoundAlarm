@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 6,
-    "identityHash": "72032e75887ba0798c5f0449f7f524ae",
+    "identityHash": "e7f117028244f30476e399e5e42d2e0a",
     "entities": [
       {
         "tableName": "alarms",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `hour` INTEGER NOT NULL, `minute` INTEGER NOT NULL, `label` TEXT NOT NULL, `isEnabled` INTEGER NOT NULL, `repeatDays` TEXT NOT NULL, `soundUri` TEXT, `isVibrate` INTEGER NOT NULL, `deleteAfterFired` INTEGER NOT NULL, `isRandomMusic` INTEGER NOT NULL, `volume` REAL NOT NULL, `fadeInDuration` INTEGER NOT NULL, `playlistGroupId` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `hour` INTEGER NOT NULL, `minute` INTEGER NOT NULL, `label` TEXT NOT NULL, `isEnabled` INTEGER NOT NULL, `repeatDays` TEXT NOT NULL, `soundUri` TEXT, `isVibrate` INTEGER NOT NULL, `deleteAfterFired` INTEGER NOT NULL, `isRandomMusic` INTEGER NOT NULL, `volume` REAL NOT NULL, `fadeInDuration` INTEGER NOT NULL, `playlistGroupId` INTEGER NOT NULL, `dismissMethod` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -83,6 +83,12 @@
             "fieldPath": "playlistGroupId",
             "columnName": "playlistGroupId",
             "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dismissMethod",
+            "columnName": "dismissMethod",
+            "affinity": "TEXT",
             "notNull": true
           }
         ],
@@ -258,7 +264,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '72032e75887ba0798c5f0449f7f524ae')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e7f117028244f30476e399e5e42d2e0a')"
     ]
   }
 }

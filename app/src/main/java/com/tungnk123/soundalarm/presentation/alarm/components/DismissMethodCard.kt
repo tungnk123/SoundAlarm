@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.DirectionsWalk
+import androidx.compose.material.icons.filled.Memory
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.SmartDisplay
 import androidx.compose.material3.ElevatedCard
@@ -124,6 +125,23 @@ fun DismissMethodCard(
                     description = "Walk steps to dismiss",
                     selected = dismissMethod == DismissMethod.WALK,
                     onClick = { onSelectDismissMethod(DismissMethod.WALK) },
+                )
+
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+
+                DismissMethodRow(
+                    icon = {
+                        Icon(
+                            Icons.Default.Memory,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    },
+                    label = "Memory",
+                    description = "Memorize a code and type it back to dismiss",
+                    selected = dismissMethod == DismissMethod.MEMORY,
+                    onClick = { onSelectDismissMethod(DismissMethod.MEMORY) },
                 )
             }
 
