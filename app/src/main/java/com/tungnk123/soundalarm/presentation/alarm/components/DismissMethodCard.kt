@@ -26,8 +26,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.tungnk123.soundalarm.R
 import com.tungnk123.soundalarm.domain.model.DismissMethod
 
 @Composable
@@ -50,7 +52,7 @@ fun DismissMethodCard(
                         tint = MaterialTheme.colorScheme.onTertiaryContainer,
                     )
                 },
-                title = "Dismiss Method",
+                title = stringResource(R.string.label_dismiss_method),
                 iconContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
                 titleColor = MaterialTheme.colorScheme.tertiary,
             )
@@ -70,8 +72,8 @@ fun DismissMethodCard(
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     },
-                    label = "None",
-                    description = "Tap the button to dismiss",
+                    label = stringResource(R.string.dismiss_method_none),
+                    description = stringResource(R.string.dismiss_method_none_description),
                     selected = dismissMethod == DismissMethod.NONE,
                     onClick = { onSelectDismissMethod(DismissMethod.NONE) },
                 )
@@ -87,8 +89,8 @@ fun DismissMethodCard(
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     },
-                    label = "Math",
-                    description = "Solve a math problem to dismiss",
+                    label = stringResource(R.string.dismiss_method_math),
+                    description = stringResource(R.string.dismiss_method_math_description),
                     selected = dismissMethod == DismissMethod.MATH,
                     onClick = { onSelectDismissMethod(DismissMethod.MATH) },
                 )

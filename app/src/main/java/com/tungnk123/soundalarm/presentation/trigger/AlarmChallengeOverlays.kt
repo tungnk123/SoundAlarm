@@ -47,11 +47,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import com.tungnk123.soundalarm.R
 import com.tungnk123.soundalarm.domain.model.MathDifficulty
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
@@ -127,7 +129,7 @@ fun MathChallengeSection(
     ) {
         if (config.mathProblemCount > 1) {
             Text(
-                text = "Problem ${currentIndex + 1} / ${config.mathProblemCount}",
+                text = stringResource(R.string.challenge_math_problem_counter, currentIndex + 1, config.mathProblemCount),
                 color = Color.White.copy(alpha = 0.5f),
                 style = MaterialTheme.typography.labelMedium,
             )
@@ -167,7 +169,7 @@ fun MathChallengeSection(
 
         if (isWrong) {
             Text(
-                text = "Wrong answer — try again",
+                text = stringResource(R.string.challenge_math_wrong_answer),
                 color = Color(0xFFFF4757).copy(alpha = 0.85f),
                 style = MaterialTheme.typography.labelSmall,
             )
@@ -278,7 +280,7 @@ fun ShakeChallengeSection(
         }
         Text(text = "$shakeCount / ${config.shakeCount}", fontSize = 28.sp, fontWeight = FontWeight.Light, color = Color.White)
         Text(
-            text = "Shake your phone to dismiss",
+            text = stringResource(R.string.challenge_shake_instruction),
             color = Color.White.copy(alpha = 0.6f),
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
@@ -369,9 +371,9 @@ fun WalkChallengeSection(
         )
         Text(
             text = when {
-                !permissionGranted -> "Permission needed to count steps"
-                sensorAvailable -> "Walk ${config.walkStepGoal} steps to dismiss"
-                else -> "Step sensor unavailable on this device"
+                !permissionGranted -> stringResource(R.string.challenge_walk_permission_needed)
+                sensorAvailable -> stringResource(R.string.challenge_walk_instruction, config.walkStepGoal)
+                else -> stringResource(R.string.challenge_walk_sensor_unavailable)
             },
             color = Color.White.copy(alpha = 0.6f),
             style = MaterialTheme.typography.bodyMedium,
@@ -389,7 +391,7 @@ fun WalkChallengeSection(
                 color = Color(0xFF0D9488).copy(alpha = 0.4f),
             ) {
                 Text(
-                    text = "Grant Permission",
+                    text = stringResource(R.string.button_grant_permission),
                     color = Color.White,
                     modifier = Modifier.padding(horizontal = 32.dp, vertical = 12.dp),
                     fontWeight = FontWeight.Medium,
@@ -403,7 +405,7 @@ fun WalkChallengeSection(
                 color = Color.White.copy(alpha = 0.15f),
             ) {
                 Text(
-                    text = "Dismiss",
+                    text = stringResource(R.string.button_dismiss),
                     color = Color.White,
                     modifier = Modifier.padding(horizontal = 32.dp, vertical = 12.dp),
                     fontWeight = FontWeight.Medium,
@@ -466,7 +468,7 @@ fun MemoryChallengeSection(
                 modifier = Modifier.size(18.dp),
             )
             Text(
-                text = if (phase == MemoryPhase.SHOWING) "Memorize this code" else "Type the code from memory",
+                text = if (phase == MemoryPhase.SHOWING) stringResource(R.string.challenge_memory_show_instruction) else stringResource(R.string.challenge_memory_type_instruction),
                 color = Color.White.copy(alpha = 0.7f),
                 style = MaterialTheme.typography.labelMedium,
                 textAlign = TextAlign.Center,
@@ -498,7 +500,7 @@ fun MemoryChallengeSection(
                         trackColor = Color.White.copy(alpha = 0.15f),
                     )
                     Text(
-                        text = "Hiding in $countdown…",
+                        text = stringResource(R.string.challenge_memory_hiding_in, countdown),
                         color = Color.White.copy(alpha = 0.5f),
                         style = MaterialTheme.typography.labelSmall,
                     )
@@ -535,7 +537,7 @@ fun MemoryChallengeSection(
 
                     if (isWrong) {
                         Text(
-                            text = "Wrong code — try again",
+                            text = stringResource(R.string.challenge_memory_wrong_code),
                             color = Color(0xFFFF4757).copy(alpha = 0.85f),
                             style = MaterialTheme.typography.labelSmall,
                         )

@@ -274,5 +274,34 @@
     <string name="challenge_memory_description">Memorize a digit code shown briefly, then type it from memory to dismiss</string>
     <string name="challenge_label_code_length">Code length</string>
     <string name="challenge_test_memory_title">Test: Memory Challenge</string>
+
+    <!-- Challenge Overlays (runtime) -->
+    <string name="challenge_math_problem_counter">Problem %1$d / %2$d</string>
+    <string name="challenge_math_wrong_answer">Wrong answer — try again</string>
+    <string name="challenge_shake_instruction">Shake your phone to dismiss</string>
+    <string name="challenge_walk_permission_needed">Permission needed to count steps</string>
+    <string name="challenge_walk_instruction">Walk %d steps to dismiss</string>
+    <string name="challenge_walk_sensor_unavailable">Step sensor unavailable on this device</string>
+    <string name="challenge_memory_show_instruction">Memorize this code</string>
+    <string name="challenge_memory_type_instruction">Type the code from memory</string>
+    <string name="challenge_memory_hiding_in">Hiding in %d\u2026</string>
+    <string name="challenge_memory_wrong_code">Wrong code — try again</string>
+
+    <!-- Dismiss Method Card -->
+    <string name="label_dismiss_method">Dismiss Method</string>
+    <string name="dismiss_method_none">None</string>
+    <string name="dismiss_method_none_description">Tap the button to dismiss</string>
+    <string name="dismiss_method_math">Math</string>
+    <string name="dismiss_method_math_description">Solve a math problem to dismiss</string>
+    <string name="dismiss_method_shake">Shake</string>
+    <string name="dismiss_method_shake_description">Shake your phone to dismiss</string>
+    <string name="dismiss_method_walk">Walk</string>
+    <string name="dismiss_method_walk_description">Walk steps to dismiss</string>
+    <string name="dismiss_method_memory">Memory</string>
+    <string name="dismiss_method_memory_description">Memorize a code and type it back to dismiss</string>
+    <string name="dismiss_method_challenge_hint">Challenge settings can be configured in the Challenge tab</string>
+    <string name="label_active">Active</string>
+    <string name="label_select">Select</string>
+    <string name="button_dismiss">Dismiss</string>
 </resources>
 
