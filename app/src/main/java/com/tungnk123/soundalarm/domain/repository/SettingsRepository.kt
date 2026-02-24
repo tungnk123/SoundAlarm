@@ -1,6 +1,7 @@
 package com.tungnk123.soundalarm.domain.repository
 
 import com.tungnk123.soundalarm.domain.model.AppSettings
+import com.tungnk123.soundalarm.domain.model.MathDifficulty
 import kotlinx.coroutines.flow.StateFlow
 
 interface SettingsRepository {
@@ -19,4 +20,9 @@ interface SettingsRepository {
     suspend fun updateTimeAnnouncementTemplate(template: String)
     suspend fun updateCustomVoiceAudioPath(path: String)
     suspend fun updateVoiceBeforeMusic(enabled: Boolean)
+    suspend fun updateMathDifficulty(difficulty: MathDifficulty)
+    suspend fun updateMathProblemCount(count: Int)
+    suspend fun updateShakeCount(count: Int)
+    suspend fun updateWalkStepGoal(steps: Int)
+    suspend fun updateMemoryCodeLength(length: Int)
 }

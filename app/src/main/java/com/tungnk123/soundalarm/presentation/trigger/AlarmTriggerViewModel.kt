@@ -3,8 +3,12 @@ package com.tungnk123.soundalarm.presentation.trigger
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tungnk123.soundalarm.domain.model.Alarm
+import com.tungnk123.soundalarm.domain.model.AppSettings
 import com.tungnk123.soundalarm.domain.model.DayOfWeek
+import com.tungnk123.soundalarm.domain.model.DismissMethod
+import com.tungnk123.soundalarm.domain.model.MathDifficulty
 import com.tungnk123.soundalarm.domain.repository.AlarmRepository
+import com.tungnk123.soundalarm.domain.repository.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,10 +20,38 @@ import javax.inject.Inject
 @HiltViewModel
 class AlarmTriggerViewModel @Inject constructor(
     private val alarmRepository: AlarmRepository,
+    private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
+
+    data class ChallengeConfig(
+        val dismissMethod: DismissMethod = DismissMethod.NONE,
+        val mathDifficulty: MathDifficulty = MathDifficulty.EASY,
+        val mathProblemCount: Int = AppSettings.DEFAULT_MATH_PROBLEM_COUNT,
+        val shakeCount: Int = AppSettings.DEFAULT_SHAKE_COUNT,
+        val walkStepGoal: Int = AppSettings.DEFAULT_WALK_STEP_GOAL,
+        val memoryCodeLength: Int = AppSettings.DEFAULT_MEMORY_CODE_LENGTH,
+    )
 
     private val _nextAlarmText = MutableStateFlow<String?>(null)
     val nextAlarmText: StateFlow<String?> = _nextAlarmText.asStateFlow()
+
+    private val _challengeConfig = MutableStateFlow(ChallengeConfig())
+    val challengeConfig: StateFlow<ChallengeConfig> = _challengeConfig.asStateFlow()
+
+    fun loadAlarm(alarmId: Long) {
+        viewModelScope.launch {
+            val alarm = if (alarmId != -1L) alarmRepository.getAlarmById(alarmId) else null
+            val settings = settingsRepository.getSettings()
+            _challengeConfig.value = ChallengeConfig(
+                dismissMethod = alarm?.dismissMethod ?: DismissMethod.NONE,
+                mathDifficulty = settings.mathDifficulty,
+                mathProblemCount = settings.mathProblemCount,
+                shakeCount = settings.shakeCount,
+                walkStepGoal = settings.walkStepGoal,
+                memoryCodeLength = settings.memoryCodeLength,
+            )
+        }
+    }
 
     fun loadNextAlarm(excludeAlarmId: Long) {
         viewModelScope.launch {
@@ -40,25 +72,23 @@ class AlarmTriggerViewModel @Inject constructor(
 
         if (minMillis == Long.MAX_VALUE) return null
 
-        // Use Long arithmetic throughout — no Int conversion until final formatting
         val totalSeconds = minMillis / 1_000L
-        val days  = totalSeconds / 86_400L
+        val days = totalSeconds / 86_400L
         val hours = (totalSeconds % 86_400L) / 3_600L
-        val mins  = (totalSeconds % 3_600L) / 60L
+        val mins = (totalSeconds % 3_600L) / 60L
 
         return when {
             days >= 1L && hours > 0L -> "${days}d ${hours}h"
-            days >= 1L               -> "${days}d"
-            hours > 0L && mins > 0L  -> "${hours}h ${mins}m"
-            hours > 0L               -> "${hours}h"
-            mins > 0L                -> "${mins}m"
-            else                     -> "Soon"
+            days >= 1L -> "${days}d"
+            hours > 0L && mins > 0L -> "${hours}h ${mins}m"
+            hours > 0L -> "${hours}h"
+            mins > 0L -> "${mins}m"
+            else -> "Soon"
         }
     }
 
     private fun nextFireTimeMillis(alarm: Alarm, now: Calendar): Long {
         return if (alarm.repeatDays.isEmpty()) {
-            // One-time alarm: use today, push to tomorrow if already passed
             val cal = Calendar.getInstance().apply {
                 set(Calendar.HOUR_OF_DAY, alarm.hour)
                 set(Calendar.MINUTE, alarm.minute)
@@ -70,7 +100,6 @@ class AlarmTriggerViewModel @Inject constructor(
             }
             cal.timeInMillis - now.timeInMillis
         } else {
-            // Repeating alarm: find the soonest matching day
             alarm.repeatDays.minOf { day ->
                 val calDay = dayOfWeekToCalendar(day)
                 val cal = Calendar.getInstance().apply {
@@ -89,12 +118,12 @@ class AlarmTriggerViewModel @Inject constructor(
     }
 
     private fun dayOfWeekToCalendar(day: DayOfWeek): Int = when (day) {
-        DayOfWeek.MONDAY    -> Calendar.MONDAY
-        DayOfWeek.TUESDAY   -> Calendar.TUESDAY
+        DayOfWeek.MONDAY -> Calendar.MONDAY
+        DayOfWeek.TUESDAY -> Calendar.TUESDAY
         DayOfWeek.WEDNESDAY -> Calendar.WEDNESDAY
-        DayOfWeek.THURSDAY  -> Calendar.THURSDAY
-        DayOfWeek.FRIDAY    -> Calendar.FRIDAY
-        DayOfWeek.SATURDAY  -> Calendar.SATURDAY
-        DayOfWeek.SUNDAY    -> Calendar.SUNDAY
+        DayOfWeek.THURSDAY -> Calendar.THURSDAY
+        DayOfWeek.FRIDAY -> Calendar.FRIDAY
+        DayOfWeek.SATURDAY -> Calendar.SATURDAY
+        DayOfWeek.SUNDAY -> Calendar.SUNDAY
     }
 }

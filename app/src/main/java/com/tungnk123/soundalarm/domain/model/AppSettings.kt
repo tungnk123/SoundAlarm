@@ -14,6 +14,11 @@ data class AppSettings(
     val timeAnnouncementTemplate: String = DEFAULT_TIME_ANNOUNCEMENT_TEMPLATE,
     val customVoiceAudioPath: String = DEFAULT_CUSTOM_VOICE_AUDIO_PATH,
     val voiceBeforeMusic: Boolean = DEFAULT_VOICE_BEFORE_MUSIC,
+    val mathDifficulty: MathDifficulty = MathDifficulty.EASY,
+    val mathProblemCount: Int = DEFAULT_MATH_PROBLEM_COUNT,
+    val shakeCount: Int = DEFAULT_SHAKE_COUNT,
+    val walkStepGoal: Int = DEFAULT_WALK_STEP_GOAL,
+    val memoryCodeLength: Int = DEFAULT_MEMORY_CODE_LENGTH,
 ) {
     companion object {
         const val DEFAULT_SNOOZE_COUNT = 3
@@ -29,5 +34,9 @@ data class AppSettings(
         const val DEFAULT_TIME_ANNOUNCEMENT_TEMPLATE = "It is {time}"
         const val DEFAULT_CUSTOM_VOICE_AUDIO_PATH = ""
         const val DEFAULT_VOICE_BEFORE_MUSIC = false
+        const val DEFAULT_MATH_PROBLEM_COUNT = 1
+        const val DEFAULT_SHAKE_COUNT = 10
+        const val DEFAULT_WALK_STEP_GOAL = 20
+        const val DEFAULT_MEMORY_CODE_LENGTH = 4
     }
 }
