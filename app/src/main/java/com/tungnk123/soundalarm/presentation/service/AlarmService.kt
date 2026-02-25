@@ -25,11 +25,14 @@ import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
 import com.tungnk123.soundalarm.R
 import com.tungnk123.soundalarm.domain.model.AlarmDayTrack
+import com.tungnk123.soundalarm.domain.model.AlarmEventType
 import com.tungnk123.soundalarm.domain.model.AppSettings
+import com.tungnk123.soundalarm.domain.model.DismissMethod
 import com.tungnk123.soundalarm.domain.repository.AlarmDayTrackRepository
 import com.tungnk123.soundalarm.domain.repository.AlarmRepository
 import com.tungnk123.soundalarm.domain.repository.PlaylistRepository
 import com.tungnk123.soundalarm.domain.repository.SettingsRepository
+import com.tungnk123.soundalarm.domain.repository.StatisticsRepository
 import com.tungnk123.soundalarm.domain.snooze.SnoozeManager
 import com.tungnk123.soundalarm.presentation.music.MusicAudioPlayer
 import com.tungnk123.soundalarm.presentation.scheduler.AlarmReceiver
@@ -72,6 +75,9 @@ class AlarmService : Service() {
     @Inject
     lateinit var settingsRepository: SettingsRepository
 
+    @Inject
+    lateinit var statisticsRepository: StatisticsRepository
+
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var vibrator: Vibrator? = null
     private var autoStopJob: Job? = null
@@ -89,6 +95,7 @@ class AlarmService : Service() {
         const val ACTION_ALARM_STOPPED = "com.tungnk123.soundalarm.ALARM_STOPPED"
         const val EXTRA_ALARM_ID = "ALARM_ID"
         const val EXTRA_ALARM_LABEL = "ALARM_LABEL"
+        const val EXTRA_DISMISS_METHOD = "DISMISS_METHOD"
 
         private const val INVALID_ALARM_ID = -1L
         private const val SNOOZE_DURATION_MS = 10 * 60 * 1000L
@@ -125,6 +132,23 @@ class AlarmService : Service() {
         when (intent?.action) {
             ACTION_STOP_ALARM -> {
                 val alarmId = intent.getLongExtra(EXTRA_ALARM_ID, INVALID_ALARM_ID)
+                val alarmLabel = intent.getStringExtra(EXTRA_ALARM_LABEL).orEmpty()
+                val dismissMethod = runCatching {
+                    DismissMethod.valueOf(intent.getStringExtra(EXTRA_DISMISS_METHOD) ?: "NONE")
+                }.getOrDefault(DismissMethod.NONE)
+                serviceScope.launch {
+                    if (alarmId != INVALID_ALARM_ID) {
+                        val label = alarmLabel.ifEmpty {
+                            alarmRepository.getAlarmById(alarmId)?.label.orEmpty()
+                        }
+                        statisticsRepository.recordEvent(
+                            alarmId = alarmId,
+                            alarmLabel = label,
+                            eventType = AlarmEventType.DISMISSED,
+                            dismissMethod = dismissMethod,
+                        )
+                    }
+                }
                 snoozeManager.resetSnoozeCount(alarmId)
                 autoStopJob?.cancel()
                 stopAlarmAndNotify()
@@ -134,6 +158,15 @@ class AlarmService : Service() {
             ACTION_SNOOZE_ALARM -> {
                 val alarmId = intent.getLongExtra(EXTRA_ALARM_ID, INVALID_ALARM_ID)
                 val alarmLabel = intent.getStringExtra(EXTRA_ALARM_LABEL) ?: getString(R.string.label_alarm_default)
+                serviceScope.launch {
+                    if (alarmId != INVALID_ALARM_ID) {
+                        statisticsRepository.recordEvent(
+                            alarmId = alarmId,
+                            alarmLabel = alarmLabel,
+                            eventType = AlarmEventType.SNOOZED,
+                        )
+                    }
+                }
                 val settings = settingsRepository.getSettings()
                 val snoozeCount = snoozeManager.getSnoozeCount(alarmId)
                 val maxSnooze = settings.snoozeCount
@@ -164,6 +197,16 @@ class AlarmService : Service() {
                 snoozeManager.resetSnoozeCount(alarmId)
                 stopAlarmAndNotify()
                 stopSelf()
+            }
+        }
+
+        serviceScope.launch {
+            if (alarmId != INVALID_ALARM_ID) {
+                statisticsRepository.recordEvent(
+                    alarmId = alarmId,
+                    alarmLabel = alarmLabel,
+                    eventType = AlarmEventType.FIRED,
+                )
             }
         }
 
@@ -414,6 +457,7 @@ class AlarmService : Service() {
         val stopIntent = Intent(this, AlarmService::class.java).apply {
             action = ACTION_STOP_ALARM
             putExtra(EXTRA_ALARM_ID, alarmId)
+            putExtra(EXTRA_ALARM_LABEL, label)
         }
         val stopPendingIntent = PendingIntent.getService(
             this, STOP_REQUEST_CODE, stopIntent,

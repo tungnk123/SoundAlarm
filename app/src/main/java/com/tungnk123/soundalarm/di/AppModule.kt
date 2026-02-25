@@ -8,6 +8,7 @@ import androidx.room.Room
 import com.tungnk123.soundalarm.data.local.SoundAlarmDatabase
 import com.tungnk123.soundalarm.data.local.dao.AlarmDao
 import com.tungnk123.soundalarm.data.local.dao.AlarmDayTrackDao
+import com.tungnk123.soundalarm.data.local.dao.AlarmEventDao
 import com.tungnk123.soundalarm.data.local.dao.PlaylistDao
 import com.tungnk123.soundalarm.data.local.dao.PlaylistGroupDao
 import dagger.Module
@@ -57,6 +58,12 @@ object AppModule {
     @Singleton
     fun providePlaylistGroupDao(database: SoundAlarmDatabase): PlaylistGroupDao {
         return database.playlistGroupDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAlarmEventDao(database: SoundAlarmDatabase): AlarmEventDao {
+        return database.alarmEventDao()
     }
 
     @Provides

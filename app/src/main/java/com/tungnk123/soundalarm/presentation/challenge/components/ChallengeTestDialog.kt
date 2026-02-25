@@ -51,7 +51,7 @@ fun ChallengeTestDialog(
             dismissOnClickOutside = false,
         ),
     ) {
-        Box(
+        Box(    
             modifier = Modifier
                 .fillMaxSize()
                 .background(

@@ -303,5 +303,25 @@
     <string name="label_active">Active</string>
     <string name="label_select">Select</string>
     <string name="button_dismiss">Dismiss</string>
+
+    <!-- Statistics Screen -->
+    <string name="title_statistics">Statistics</string>
+    <string name="cd_clear_statistics">Clear statistics</string>
+    <string name="statistics_summary">Summary</string>
+    <string name="statistics_total_alarms">Total Alarms</string>
+    <string name="statistics_active_alarms">Active</string>
+    <string name="statistics_dismissed">Dismissed</string>
+    <string name="statistics_snoozed">Snoozed</string>
+    <string name="statistics_challenge_breakdown">Challenge Breakdown</string>
+    <string name="statistics_alarms_count">%d alarms</string>
+    <string name="statistics_dismissed_count">%d dismissals</string>
+    <string name="statistics_recent_activity">Recent Activity</string>
+    <string name="statistics_no_events">No alarm activity yet.\nStatistics will appear after your first alarm fires.</string>
+    <string name="statistics_event_fired">Alarm fired</string>
+    <string name="statistics_event_dismissed">Dismissed</string>
+    <string name="statistics_event_dismissed_with">Dismissed via %s</string>
+    <string name="statistics_event_snoozed">Snoozed</string>
+    <string name="statistics_clear_title">Clear Statistics</string>
+    <string name="statistics_clear_message">All recorded alarm events will be permanently deleted.</string>
 </resources>
 
