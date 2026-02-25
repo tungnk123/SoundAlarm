@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 7,
-    "identityHash": "e7f117028244f30476e399e5e42d2e0a",
+    "identityHash": "e5bdb2554e326a4746e194d31815e13e",
     "entities": [
       {
         "tableName": "alarms",
@@ -260,11 +260,59 @@
             "id"
           ]
         }
+      },
+      {
+        "tableName": "alarm_events",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `alarmId` INTEGER NOT NULL, `alarmLabel` TEXT NOT NULL, `eventType` TEXT NOT NULL, `dismissMethod` TEXT NOT NULL, `timestamp` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "alarmId",
+            "columnName": "alarmId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "alarmLabel",
+            "columnName": "alarmLabel",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "eventType",
+            "columnName": "eventType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dismissMethod",
+            "columnName": "dismissMethod",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e7f117028244f30476e399e5e42d2e0a')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e5bdb2554e326a4746e194d31815e13e')"
     ]
   }
 }

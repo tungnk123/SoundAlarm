@@ -59,16 +59,20 @@ class AlarmTriggerActivity : ComponentActivity() {
                     alarmLabel = alarmLabel,
                     nextAlarmText = nextAlarmText,
                     challengeConfig = challengeConfig,
-                    onStop = { stopAlarm() },
+                    onStop = { stopAlarm(alarmId, alarmLabel) },
                     onSnooze = { snoozeAlarm(alarmId, alarmLabel) },
                 )
             }
         }
     }
 
-    private fun stopAlarm() {
+    private fun stopAlarm(alarmId: Long, alarmLabel: String) {
+        val dismissMethod = viewModel.challengeConfig.value.dismissMethod
         val stopIntent = Intent(this, AlarmService::class.java).apply {
             action = AlarmService.ACTION_STOP_ALARM
+            putExtra(AlarmService.EXTRA_ALARM_ID, alarmId)
+            putExtra(AlarmService.EXTRA_ALARM_LABEL, alarmLabel)
+            putExtra(AlarmService.EXTRA_DISMISS_METHOD, dismissMethod.name)
         }
         startService(stopIntent)
         finish()
