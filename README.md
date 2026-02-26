@@ -1,11 +1,15 @@
 # SoundAlarm
 
+> **This project is a demo of the [mobile-best-practices](https://github.com/tungnk123/mobile-best-practices) agent skill.**
+> Want to build production-quality Android apps the same way? **[Check out the skill →](https://github.com/tungnk123/mobile-best-practices)**
+
 A feature-rich Android alarm application built with modern Android development practices. SoundAlarm goes beyond a basic alarm clock by offering custom music playlists, cognitive wake-up challenges, and detailed usage statistics — all delivered through a clean, Material 3 interface.
 
 ---
 
 ## Table of Contents
 
+- [Built With mobile-best-practices](#built-with-mobile-best-practices)
 - [Features](#features)
 - [Architecture](#architecture)
 - [Tech Stack](#tech-stack)
@@ -15,6 +19,18 @@ A feature-rich Android alarm application built with modern Android development p
 - [Alarm Scheduling](#alarm-scheduling)
 - [Getting Started](#getting-started)
 - [Requirements](#requirements)
+
+---
+
+## Built With mobile-best-practices
+
+SoundAlarm was built as a **real-world demonstration** of the **[mobile-best-practices](https://github.com/tungnk123/mobile-best-practices)** agent skill — a searchable database of **2,024 Android best practices** optimized for Jetpack Compose development.
+
+The skill covers architecture patterns, UI patterns, performance rules, security practices, testing patterns, and ready-to-use Gradle declarations. Every architectural decision in this project — Clean Architecture layers, MVVM, Hilt DI, Room schema design, Foreground Service setup — was guided by that knowledge base.
+
+**Use the skill yourself to build Android apps at the same quality level:**
+
+### **[github.com/tungnk123/mobile-best-practices](https://github.com/tungnk123/mobile-best-practices)**
 
 ---
 
