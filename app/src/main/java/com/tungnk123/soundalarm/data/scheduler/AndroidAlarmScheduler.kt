@@ -53,7 +53,9 @@ class AndroidAlarmScheduler @Inject constructor(
             }
         }
 
-        if (settings.preAlarmNotification) {
+        if (alarm.notifyBeforeMinutes > 0) {
+            schedulePreAlarmNotification(alarm, triggerAtMillis, alarm.notifyBeforeMinutes)
+        } else if (settings.preAlarmNotification) {
             schedulePreAlarmNotification(alarm, triggerAtMillis, settings.preAlarmNotificationTime)
         } else {
             cancelPreAlarmNotification(alarm)

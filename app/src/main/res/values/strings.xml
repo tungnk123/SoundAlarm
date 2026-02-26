@@ -163,6 +163,19 @@
     <string name="notification_snooze_title">Alarm Snoozed</string>
     <string name="notification_snooze_text">%1$s – rings at %2$s</string>
 
+    <!-- Notify Before (per-alarm) -->
+    <string name="label_notify_before">Notify Before</string>
+    <string name="label_notify_before_desc">Get a reminder notification before this alarm fires</string>
+    <string name="label_notify_before_active">Reminder set %d min before alarm</string>
+    <string name="label_notify_before_off">Off</string>
+    <string name="label_notify_before_minutes">%d min</string>
+    <string name="label_notify_before_1h">1 hour</string>
+    <string name="label_notify_before_2h">2 hours</string>
+    <string name="label_notify_before_custom">Custom…</string>
+    <string name="dialog_notify_before_title">Custom Reminder Time</string>
+    <string name="dialog_notify_before_label">Minutes before alarm</string>
+    <string name="dialog_notify_before_suffix">min</string>
+
     <!-- Sound Settings -->
     <string name="label_sound_settings">Sound Settings</string>
     <string name="label_volume">Volume</string>
