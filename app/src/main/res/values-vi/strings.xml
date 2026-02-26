@@ -3,6 +3,7 @@
 
     <!-- App / TopAppBar titles -->
     <string name="title_app">Báo Thức Âm Thanh</string>
+    <string name="splash_description">Thức dậy cùng âm nhạc của bạn</string>
     <string name="title_alarm_detail_new">Báo Thức Mới</string>
     <string name="title_alarm_detail_edit">Chỉnh Sửa Báo Thức</string>
     <string name="title_settings">Cài Đặt</string>

@@ -3,6 +3,7 @@
 
     <!-- App / TopAppBar titles -->
     <string name="title_app">Sound Alarm</string>
+    <string name="splash_description">Wake up to your music</string>
     <string name="title_alarm_detail_new">New Alarm</string>
     <string name="title_alarm_detail_edit">Edit Alarm</string>
     <string name="title_settings">Settings</string>
