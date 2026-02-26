@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SoundAlarm</string>
+    <string name="app_name">Sound Alarm</string>
 
     <!-- App / TopAppBar titles -->
     <string name="title_app">Sound Alarm</string>
