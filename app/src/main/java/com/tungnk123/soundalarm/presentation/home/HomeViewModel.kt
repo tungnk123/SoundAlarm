@@ -16,9 +16,11 @@ import com.tungnk123.soundalarm.presentation.service.AlarmService
 import com.tungnk123.soundalarm.presentation.scheduler.AlarmReceiver
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -57,7 +59,8 @@ class HomeViewModel @Inject constructor(
             nextAlarmInfo = computeNextAlarmInfo(alarms),
             snoozeState = snoozeState,
         )
-    }.stateIn(
+    }.flowOn(Dispatchers.Default)
+    .stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = HomeUiState(),

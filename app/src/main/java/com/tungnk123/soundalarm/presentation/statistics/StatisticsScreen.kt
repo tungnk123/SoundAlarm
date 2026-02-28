@@ -123,9 +123,9 @@ private fun StatisticsContent(
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        item { Spacer(Modifier.height(4.dp)) }
+        item(contentType = "spacer") { Spacer(Modifier.height(4.dp)) }
 
-        item {
+        item(contentType = "summary") {
             SummarySection(
                 totalAlarms = stats.totalAlarms,
                 activeAlarms = stats.activeAlarms,
@@ -134,14 +134,14 @@ private fun StatisticsContent(
             )
         }
 
-        item {
+        item(contentType = "breakdown") {
             ChallengeBreakdownSection(
                 stats = stats,
             )
         }
 
         if (stats.recentEvents.isNotEmpty()) {
-            item {
+            item(contentType = "header") {
                 Text(
                     text = stringResource(R.string.statistics_recent_activity),
                     style = MaterialTheme.typography.titleMedium,
@@ -149,16 +149,16 @@ private fun StatisticsContent(
                     color = MaterialTheme.colorScheme.onSurface,
                 )
             }
-            items(stats.recentEvents, key = { it.id }) { event ->
+            items(stats.recentEvents, key = { it.id }, contentType = { "event" }) { event ->
                 RecentEventItem(event = event)
             }
         } else {
-            item {
+            item(contentType = "empty") {
                 EmptyEventsCard()
             }
         }
 
-        item { Spacer(Modifier.height(16.dp)) }
+        item(contentType = "spacer") { Spacer(Modifier.height(16.dp)) }
     }
 }
 

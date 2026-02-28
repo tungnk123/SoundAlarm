@@ -46,6 +46,9 @@ android {
         compose = true
         buildConfig = true
     }
+    composeCompiler {
+        enableStrongSkippingMode = true
+    }
 }
 
 room {
@@ -110,6 +113,7 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    debugImplementation(libs.leakcanary.android)
 
     // Media3
     implementation(libs.androidx.media3.exoplayer)

@@ -12,8 +12,14 @@ interface AlarmEventDao {
     @Insert
     suspend fun insertEvent(event: AlarmEventEntity)
 
-    @Query("SELECT * FROM alarm_events ORDER BY timestamp DESC")
-    fun getAllEvents(): Flow<List<AlarmEventEntity>>
+    @Query("SELECT * FROM alarm_events ORDER BY timestamp DESC LIMIT 20")
+    fun getRecentEvents(): Flow<List<AlarmEventEntity>>
+
+    @Query("SELECT COUNT(*) FROM alarm_events WHERE eventType = :type")
+    fun countByEventType(type: String): Flow<Int>
+
+    @Query("SELECT COUNT(*) FROM alarm_events WHERE eventType = 'DISMISSED' AND dismissMethod = :method")
+    fun countDismissedByMethod(method: String): Flow<Int>
 
     @Query("DELETE FROM alarm_events")
     suspend fun clearAllEvents()

@@ -132,7 +132,7 @@ fun MusicSelectionScreen(
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            items(state.tracks) { track ->
+                            items(state.tracks, key = { it.id }) { track ->
                                 val isPlaying = state.currentPlayingUri == track.contentUri
                                 Row(
                                     modifier = Modifier

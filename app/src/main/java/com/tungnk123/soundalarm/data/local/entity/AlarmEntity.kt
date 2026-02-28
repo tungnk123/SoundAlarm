@@ -1,12 +1,13 @@
 package com.tungnk123.soundalarm.data.local.entity
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.tungnk123.soundalarm.domain.model.Alarm
 import com.tungnk123.soundalarm.domain.model.DayOfWeek
 import com.tungnk123.soundalarm.domain.model.DismissMethod
 
-@Entity(tableName = "alarms")
+@Entity(tableName = "alarms", indices = [Index(value = ["isEnabled"])])
 data class AlarmEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,

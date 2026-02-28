@@ -8,7 +8,8 @@ import com.tungnk123.soundalarm.domain.model.DismissMethod
 import com.tungnk123.soundalarm.domain.model.toDomain
 import com.tungnk123.soundalarm.domain.repository.StatisticsRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
 class StatisticsRepositoryImpl @Inject constructor(
@@ -31,25 +32,34 @@ class StatisticsRepositoryImpl @Inject constructor(
         )
     }
 
-    override fun getStatistics(): Flow<AlarmStatistics> =
-        alarmEventDao.getAllEvents().map { events ->
-            val fired = events.count { it.eventType == AlarmEventType.FIRED.name }
-            val dismissed = events.count { it.eventType == AlarmEventType.DISMISSED.name }
-            val snoozed = events.count { it.eventType == AlarmEventType.SNOOZED.name }
-            val byMethod = DismissMethod.entries.associateWith { method ->
-                events.count {
-                    it.eventType == AlarmEventType.DISMISSED.name && it.dismissMethod == method.name
-                }
+    override fun getStatistics(): Flow<AlarmStatistics> {
+        val firedFlow = alarmEventDao.countByEventType(AlarmEventType.FIRED.name)
+        val dismissedFlow = alarmEventDao.countByEventType(AlarmEventType.DISMISSED.name)
+        val snoozedFlow = alarmEventDao.countByEventType(AlarmEventType.SNOOZED.name)
+        val recentFlow = alarmEventDao.getRecentEvents()
+        val methodFlows = DismissMethod.entries.map { method ->
+            combine(alarmEventDao.countDismissedByMethod(method.name), flowOf(method)) { count, m ->
+                m to count
             }
-            val recent = events.take(20).map { it.toDomain() }
+        }
+        val byMethodFlow = combine(methodFlows) { pairs -> pairs.toMap() }
+
+        return combine(
+            firedFlow,
+            dismissedFlow,
+            snoozedFlow,
+            recentFlow,
+            byMethodFlow,
+        ) { fired, dismissed, snoozed, recent, byMethod ->
             AlarmStatistics(
                 totalFired = fired,
                 totalDismissed = dismissed,
                 totalSnoozed = snoozed,
                 dismissByMethod = byMethod,
-                recentEvents = recent,
+                recentEvents = recent.map { it.toDomain() },
             )
         }
+    }
 
     override suspend fun clearStatistics() {
         alarmEventDao.clearAllEvents()

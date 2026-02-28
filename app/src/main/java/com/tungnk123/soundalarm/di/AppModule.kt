@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
+import androidx.room.RoomDatabase
 import com.tungnk123.soundalarm.data.local.SoundAlarmDatabase
 import com.tungnk123.soundalarm.data.local.dao.AlarmDao
 import com.tungnk123.soundalarm.data.local.dao.AlarmDayTrackDao
@@ -32,6 +33,7 @@ object AppModule {
             SoundAlarmDatabase::class.java,
             "sound_alarm_db"
         )
+            .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
             .fallbackToDestructiveMigration(true)
             .build()
     }
