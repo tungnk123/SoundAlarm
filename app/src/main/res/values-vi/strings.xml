@@ -3,6 +3,7 @@
 
     <!-- App / TopAppBar titles -->
     <string name="title_app">Báo Thức Âm Thanh</string>
+    <string name="splash_description">Thức dậy cùng âm nhạc của bạn</string>
     <string name="title_alarm_detail_new">Báo Thức Mới</string>
     <string name="title_alarm_detail_edit">Chỉnh Sửa Báo Thức</string>
     <string name="title_settings">Cài Đặt</string>
@@ -39,11 +40,14 @@
 
     <!-- Home Screen Tutorial -->
     <string name="tutorial_title">Chào Mừng Đến Với Sound Alarm!</string>
-    <string name="tutorial_step1_title">Bước 1: Tạo Danh Sách Nhạc</string>
-    <string name="tutorial_step1_desc">Thêm nhạc yêu thích vào danh sách để thức dậy cùng âm nhạc.</string>
-    <string name="tutorial_btn_create_playlist">Tạo Danh Sách</string>
-    <string name="tutorial_step2_title">Bước 2: Đặt Báo Thức</string>
-    <string name="tutorial_step2_desc">Nhấn nút + bên dưới để tạo báo thức và chọn danh sách nhạc.</string>
+    <string name="tutorial_subtitle">Làm theo các bước sau để thiết lập báo thức đầu tiên</string>
+    <string name="tutorial_step1_title">Tạo Danh Sách Nhạc</string>
+    <string name="tutorial_step1_desc">Vào tab Âm Thanh, tạo danh sách nhạc và thêm các bài hát yêu thích.</string>
+    <string name="tutorial_btn_go_to_sounds">Mở Âm Thanh</string>
+    <string name="tutorial_step2_title">Tạo Báo Thức Đầu Tiên</string>
+    <string name="tutorial_step2_desc">Nhấn nút + để đặt giờ, chọn ngày lặp lại và chọn danh sách nhạc.</string>
+    <string name="tutorial_step3_title">Chọn Thử Thách Thức Dậy</string>
+    <string name="tutorial_step3_desc">Trong tab Thử Thách, chọn cách tắt báo thức — toán học, lắc điện thoại, đi bộ hoặc ghi nhớ.</string>
 
     <!-- Alarm Detail Screen -->
     <string name="label_alarm_label">Nhãn</string>

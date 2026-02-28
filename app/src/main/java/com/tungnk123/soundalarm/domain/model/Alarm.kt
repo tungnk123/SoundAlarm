@@ -15,6 +15,7 @@ data class Alarm(
     val fadeInDuration: Int = 0,
     val playlistGroupId: Long = 0,
     val dismissMethod: DismissMethod = DismissMethod.NONE,
+    val notifyBeforeMinutes: Int = 0,
 )
 
 enum class DayOfWeek(val shortName: String) {

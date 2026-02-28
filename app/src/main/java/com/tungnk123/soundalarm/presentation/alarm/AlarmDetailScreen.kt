@@ -64,6 +64,7 @@ import com.tungnk123.soundalarm.domain.model.AlarmDayTrack
 import com.tungnk123.soundalarm.domain.model.DayOfWeek
 import com.tungnk123.soundalarm.presentation.alarm.components.DismissMethodCard
 import com.tungnk123.soundalarm.presentation.alarm.components.MusicSelectionCard
+import com.tungnk123.soundalarm.presentation.alarm.components.NotifyBeforeCard
 import com.tungnk123.soundalarm.presentation.alarm.components.ScheduleCard
 import com.tungnk123.soundalarm.presentation.alarm.components.SoundSettingsCard
 import com.tungnk123.soundalarm.presentation.alarm.components.TimePickerCard
@@ -436,6 +437,11 @@ fun AlarmDetailScreen(
                 onSetOneTime = viewModel::setOneTime,
                 onToggleVibrate = { viewModel.toggleVibrate() },
                 onToggleDeleteAfterFired = { viewModel.toggleDeleteAfterFired() },
+            )
+
+            NotifyBeforeCard(
+                notifyBeforeMinutes = uiState.notifyBeforeMinutes,
+                onNotifyBeforeChange = viewModel::updateNotifyBefore,
             )
 
             DismissMethodCard(

@@ -47,6 +47,7 @@ data class AlarmDetailUiState(
     val playlistGroupId: Long = 0,
     val availablePlaylistGroups: List<PlaylistGroup> = emptyList(),
     val dismissMethod: DismissMethod = DismissMethod.NONE,
+    val notifyBeforeMinutes: Int = 0,
 )
 
 @HiltViewModel
@@ -109,6 +110,7 @@ class AlarmDetailViewModel @Inject constructor(
                         fadeInDuration = alarm.fadeInDuration,
                         playlistGroupId = alarm.playlistGroupId,
                         dismissMethod = alarm.dismissMethod,
+                        notifyBeforeMinutes = alarm.notifyBeforeMinutes,
                     )
                 }
             }
@@ -194,6 +196,10 @@ class AlarmDetailViewModel @Inject constructor(
         _uiState.update { it.copy(dismissMethod = method) }
     }
 
+    fun updateNotifyBefore(minutes: Int) {
+        _uiState.update { it.copy(notifyBeforeMinutes = minutes) }
+    }
+
     fun updatePlaylistGroup(playlistGroupId: Long) {
         _uiState.update { it.copy(playlistGroupId = playlistGroupId) }
     }
@@ -243,6 +249,7 @@ class AlarmDetailViewModel @Inject constructor(
                 fadeInDuration = state.fadeInDuration,
                 playlistGroupId = state.playlistGroupId,
                 dismissMethod = state.dismissMethod,
+                notifyBeforeMinutes = state.notifyBeforeMinutes,
             )
             val savedId = saveAlarmUseCase(alarm)
 

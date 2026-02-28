@@ -23,6 +23,7 @@ data class AlarmEntity(
     val fadeInDuration: Int = 0,
     val playlistGroupId: Long = 0,
     val dismissMethod: String = "NONE",
+    val notifyBeforeMinutes: Int = 0,
 ) {
     fun toDomain(): Alarm = Alarm(
         id = id,
@@ -42,6 +43,7 @@ data class AlarmEntity(
         fadeInDuration = fadeInDuration,
         playlistGroupId = playlistGroupId,
         dismissMethod = runCatching { DismissMethod.valueOf(dismissMethod) }.getOrDefault(DismissMethod.NONE),
+        notifyBeforeMinutes = notifyBeforeMinutes,
     )
 
     companion object {
@@ -60,6 +62,7 @@ data class AlarmEntity(
             fadeInDuration = alarm.fadeInDuration,
             playlistGroupId = alarm.playlistGroupId,
             dismissMethod = alarm.dismissMethod.name,
+            notifyBeforeMinutes = alarm.notifyBeforeMinutes,
         )
     }
 }

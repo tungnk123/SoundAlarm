@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Splash-screen icon: the alarm clock is scaled to ~70% of the viewport and
+    centred via pivotX/pivotY so it doesn't feel too large inside the
+    Android 12+ 160 dp splash circle.
+-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
-    android:viewportWidth="108"
-    android:viewportHeight="108">
-    <!--
-        Content placed in a group scaled 3x and offset by 18dp to sit inside
-        the 72dp adaptive-icon safe zone (18–90 on each axis).
-        All paths below are in a 24×24 coordinate space.
-    -->
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
     <group
-        android:scaleX="2.5"
-        android:scaleY="2.5"
-        android:translateX="24"
-        android:translateY="24">
+        android:pivotX="12"
+        android:pivotY="12"
+        android:scaleX="0.72"
+        android:scaleY="0.72">
 
         <!-- Right bell ear -->
         <path
@@ -25,13 +26,13 @@
             android:fillColor="#FFFFFF"
             android:pathData="M5.6,1.86L1,5.71L2.29,7.24L6.89,3.38L5.6,1.86Z" />
 
-        <!-- Clock ring: outer circle minus inner circle (even-odd creates the ring) -->
+        <!-- Clock ring -->
         <path
             android:fillColor="#FFFFFF"
             android:fillType="evenOdd"
             android:pathData="M12,4C7.03,4 3,8.03 3,13C3,17.97 7.03,22 12,22C16.97,22 21,17.97 21,13C21,8.03 16.97,4 12,4ZM12,6C8.13,6 5,9.13 5,13C5,16.87 8.13,20 12,20C15.87,20 19,16.87 19,13C19,9.13 15.87,6 12,6Z" />
 
-        <!-- Clock hands (hour pointing up, minute pointing right) -->
+        <!-- Clock hands -->
         <path
             android:fillColor="#FFFFFF"
             android:pathData="M12.5,8H11.5V13.5L15.5,15.85L16,14.92L12.5,12.85V8Z" />

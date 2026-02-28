@@ -1,6 +1,8 @@
 package com.tungnk123.soundalarm.presentation.navigation
 
 sealed class Screen(val route: String) {
+    data object Splash : Screen("splash")
+
     // Bottom nav tabs
     data object Home : Screen("home")
     data object Sounds : Screen("sounds")

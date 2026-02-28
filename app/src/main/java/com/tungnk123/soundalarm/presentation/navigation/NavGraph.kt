@@ -14,6 +14,7 @@ import com.tungnk123.soundalarm.presentation.music.MusicSelectionScreen
 import com.tungnk123.soundalarm.presentation.playlist.PlaylistGroupsScreen
 import com.tungnk123.soundalarm.presentation.playlist.PlaylistScreen
 import com.tungnk123.soundalarm.presentation.settings.SettingsScreen
+import com.tungnk123.soundalarm.presentation.splash.SplashScreen
 import com.tungnk123.soundalarm.presentation.statistics.StatisticsScreen
 
 @Composable
@@ -23,9 +24,18 @@ fun NavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.route,
+        startDestination = Screen.Splash.route,
         modifier = modifier,
     ) {
+        composable(Screen.Splash.route) {
+            SplashScreen(
+                onSplashComplete = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Splash.route) { inclusive = true }
+                    }
+                },
+            )
+        }
         composable(Screen.Home.route) {
             HomeScreen(
                 onNavigateToAlarmDetail = { alarmId ->

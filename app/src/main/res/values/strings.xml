@@ -1,8 +1,9 @@
 <resources>
-    <string name="app_name">SoundAlarm</string>
+    <string name="app_name">Sound Alarm</string>
 
     <!-- App / TopAppBar titles -->
     <string name="title_app">Sound Alarm</string>
+    <string name="splash_description">Wake up to your music</string>
     <string name="title_alarm_detail_new">New Alarm</string>
     <string name="title_alarm_detail_edit">Edit Alarm</string>
     <string name="title_settings">Settings</string>
@@ -47,11 +48,14 @@
 
     <!-- Home Screen Tutorial -->
     <string name="tutorial_title">Welcome to Sound Alarm!</string>
-    <string name="tutorial_step1_title">Step 1: Create a Playlist</string>
-    <string name="tutorial_step1_desc">Add your favorite local music to a playlist so you can wake up to it.</string>
-    <string name="tutorial_btn_create_playlist">Create Playlist</string>
-    <string name="tutorial_step2_title">Step 2: Set an Alarm</string>
-    <string name="tutorial_step2_desc">Tap the + button below to create an alarm and select your playlist.</string>
+    <string name="tutorial_subtitle">Follow these steps to set up your first alarm</string>
+    <string name="tutorial_step1_title">Build Your Music Playlist</string>
+    <string name="tutorial_step1_desc">Go to the Sounds tab, create a playlist, and add your favorite songs.</string>
+    <string name="tutorial_btn_go_to_sounds">Open Sounds</string>
+    <string name="tutorial_step2_title">Create Your First Alarm</string>
+    <string name="tutorial_step2_desc">Tap the + button to set a time, choose repeat days, and select your playlist.</string>
+    <string name="tutorial_step3_title">Pick a Wake-Up Challenge</string>
+    <string name="tutorial_step3_desc">In the Challenge tab, choose how to dismiss your alarm — math, shake, walk, or memory.</string>
 
     <!-- Alarm Detail Screen -->
     <string name="label_alarm_label">Label</string>
@@ -158,6 +162,19 @@
     <!-- Snooze notification -->
     <string name="notification_snooze_title">Alarm Snoozed</string>
     <string name="notification_snooze_text">%1$s – rings at %2$s</string>
+
+    <!-- Notify Before (per-alarm) -->
+    <string name="label_notify_before">Notify Before</string>
+    <string name="label_notify_before_desc">Get a reminder notification before this alarm fires</string>
+    <string name="label_notify_before_active">Reminder set %d min before alarm</string>
+    <string name="label_notify_before_off">Off</string>
+    <string name="label_notify_before_minutes">%d min</string>
+    <string name="label_notify_before_1h">1 hour</string>
+    <string name="label_notify_before_2h">2 hours</string>
+    <string name="label_notify_before_custom">Custom…</string>
+    <string name="dialog_notify_before_title">Custom Reminder Time</string>
+    <string name="dialog_notify_before_label">Minutes before alarm</string>
+    <string name="dialog_notify_before_suffix">min</string>
 
     <!-- Sound Settings -->
     <string name="label_sound_settings">Sound Settings</string>
